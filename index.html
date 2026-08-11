@@ -31136,7 +31136,7 @@ Cancelar = mantener el examen guardado`) : true;
           }
         )
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+      (isOfflineMode || syncStatus === "syncing" || syncStatus === "error") && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
         "div",
         {
           className: "fixed bottom-4 left-4 z-[200] flex items-center gap-2 bg-[rgba(28,28,30,0.85)] text-white text-[11px] font-semibold px-3 py-1.5 rounded-full backdrop-blur-xl shadow-lg select-none",
@@ -31147,12 +31147,9 @@ Cancelar = mantener el examen guardado`) : true;
           ] }) : syncStatus === "syncing" ? /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)((0, import_jsx_runtime11.Fragment), { children: [
             /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "w-2 h-2 rounded-full bg-[#E2921A] shrink-0 opt-pulse-dot" }),
             /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { children: "Guardando\u2026" })
-          ] }) : syncStatus === "error" ? /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)((0, import_jsx_runtime11.Fragment), { children: [
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)((0, import_jsx_runtime11.Fragment), { children: [
             /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "w-2 h-2 rounded-full bg-[#E14E3C] shrink-0" }),
             /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { children: "Error de sincronizaci\xF3n" })
-          ] }) : /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)((0, import_jsx_runtime11.Fragment), { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "w-2 h-2 rounded-full bg-[#3FA35C] shrink-0" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { children: "Sincronizado en la nube" })
           ] })
         }
       ),
