@@ -18859,36 +18859,54 @@ B) Opci\xF3n B*` }),
     const renderTabContent = () => {
       if (activeView === "temario") {
         const sortedSchedule = [...schedule].sort((a, b) => a.week - b.week);
-        const dedupeItems = (values) => {
+        const now = /* @__PURE__ */ new Date();
+        const dedupeItems = (rows) => {
           const map = /* @__PURE__ */ new Map();
-          values.forEach((raw) => {
+          rows.forEach(({ text: raw, end }) => {
             const text = (raw || "").trim();
             if (!text) return;
-            map.set(text, (map.get(text) || 0) + 1);
+            const examDate = end ? new Date(end[0], end[1] - 1, end[2], 23, 59, 59) : null;
+            const passed = !!examDate && now >= examDate;
+            const prev = map.get(text);
+            if (prev) {
+              prev.count += 1;
+              prev.allSeen = prev.allSeen && passed;
+            } else {
+              map.set(text, { text, count: 1, allSeen: passed });
+            }
           });
-          return Array.from(map.entries()).map(([text, count]) => ({ text, count }));
+          return Array.from(map.values());
         };
-        const specItems = dedupeItems(sortedSchedule.map((s) => s.spec));
-        const legItems = dedupeItems(sortedSchedule.map((s) => s.leg));
+        const specItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.spec, end: s.end })));
+        const legItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.leg, end: s.end })));
         const renderGroup = (items, label, colorClass, bgClass, borderClass) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `text-[11px] font-black ${colorClass} uppercase tracking-widest mb-3 flex items-center gap-1.5`, children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 13 }),
             label
           ] }),
-          items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-            "div",
-            {
-              className: `relative p-3 pr-11 ${bgClass} border ${borderClass} rounded-2xl`,
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: item.text }),
-                item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${colorClass} bg-white border ${borderClass} rounded-full px-1.5 py-0.5 leading-none`, children: [
-                  "x",
-                  item.count
-                ] })
-              ]
-            },
-            item.text + idx
-          )) })
+          items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => {
+            const seenBg = "bg-[rgba(18,161,107,0.07)]";
+            const seenBorder = "border-[rgba(18,161,107,0.3)]";
+            const seenColor = "text-[#12A16B]";
+            const itemBg = item.allSeen ? seenBg : bgClass;
+            const itemBorder = item.allSeen ? seenBorder : borderClass;
+            const itemBadgeColor = item.allSeen ? seenColor : colorClass;
+            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+              "div",
+              {
+                className: `relative p-3 pr-11 ${itemBg} border ${itemBorder} rounded-2xl transition-colors`,
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: item.text }),
+                  item.allSeen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "absolute bottom-2.5 right-2.5 w-4 h-4 rounded-full bg-[#12A16B] text-white text-[10px] font-black flex items-center justify-center leading-none", children: "\u2713" }),
+                  item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${itemBadgeColor} bg-white border ${itemBorder} rounded-full px-1.5 py-0.5 leading-none`, children: [
+                    "x",
+                    item.count
+                  ] })
+                ]
+              },
+              item.text + idx
+            );
+          }) })
         ] });
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-5", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mb-5.5", children: [
