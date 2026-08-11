@@ -18276,6 +18276,7 @@ B) Opci\xF3n B*` }),
     const [notifStatus, setNotifStatus] = (0, import_react7.useState)("");
     const [notifLoading, setNotifLoading] = (0, import_react7.useState)(false);
     const [statsSectionReview, setStatsSectionReview] = (0, import_react7.useState)(null);
+    const [statsReviewFilter, setStatsReviewFilter] = (0, import_react7.useState)("general");
     const [addingQuestionOpen, setAddingQuestionOpen] = (0, import_react7.useState)(false);
     const [qText, setQText] = (0, import_react7.useState)("");
     const [qAnswer, setQAnswer] = (0, import_react7.useState)("");
@@ -18539,6 +18540,7 @@ B) Opci\xF3n B*` }),
       statsSectionReview.questions.forEach((q, qi) => {
         if (normalizeAnswer(statsSectionReview.answers[qi]) === normalizeAnswer(q.correctAnswer)) score++;
       });
+      setStatsReviewFilter("general");
       setStatsSectionReview({
         ...statsSectionReview,
         submitted: true,
@@ -18773,7 +18775,7 @@ B) Opci\xF3n B*` }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
               "button",
               {
-                onClick: () => setStatsSectionReview(null),
+                onClick: () => { setStatsReviewFilter("general"); setStatsSectionReview(null); },
                 className: "p-2 -ml-2 text-[#E14E3C] hover:opacity-80 transition-opacity",
                 children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChevronLeft, { size: 24 })
               }
@@ -18807,48 +18809,81 @@ B) Opci\xF3n B*` }),
               ] })
             ] });
           })(),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-6", children: s.questions.map((q, qi) => {
-            const mine = s.answers[qi];
-            const manualGrade = s.pendingGrades ? s.pendingGrades[qi] : void 0;
-            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-              "div",
-              {
-                className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]",
-                children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-base font-bold text-[#1A1712] mb-4", children: [
-                    qi + 1,
-                    ". ",
-                    q.text
-                  ] }),
-                  (() => {
-                    const isOk = manualGrade === true || manualGrade === false ? manualGrade : normalizeAnswer(mine) === normalizeAnswer(q.correctAnswer);
-                    return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-2.5", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-                        "div",
-                        {
-                          className: `p-4 rounded-2xl border ${isOk ? "border-[#12A16B] bg-[rgba(18,161,107,0.1)]" : "border-[#E14E3C] bg-[rgba(225,78,60,0.1)]"}`,
-                          children: [
-                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: `text-[10px] font-extrabold uppercase tracking-wider mb-1 ${isOk ? "text-[#12A16B]" : "text-[#E14E3C]"}`, children: "Tu respuesta" }),
-                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-sm font-semibold text-[#1A1712] whitespace-pre-wrap", children: mine && mine.trim() ? mine : "(sin responder)" })
-                          ]
-                        }
-                      ),
-                      !isOk && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "p-4 rounded-2xl border border-[#12A16B] bg-[rgba(18,161,107,0.1)]", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10px] font-extrabold uppercase tracking-wider mb-1 text-[#12A16B]", children: "Respuesta correcta" }),
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-sm font-semibold text-[#1A1712] whitespace-pre-wrap", children: q.correctAnswer })
+          (() => {
+            const allQ2 = s.questions.map((q, qi) => {
+              const mine = s.answers[qi];
+              const manualGrade = s.pendingGrades ? s.pendingGrades[qi] : void 0;
+              const isBlank = mine === null || mine === void 0 || typeof mine === "string" && mine.trim() === "";
+              const isOk = manualGrade === true || manualGrade === false ? manualGrade : !isBlank && normalizeAnswer(mine) === normalizeAnswer(q.correctAnswer);
+              return { q, qi, mine, manualGrade, isBlank, isOk };
+            });
+            const countAprobadas2 = allQ2.filter((it) => it.isOk).length;
+            const countSuspendidas2 = allQ2.filter((it) => !it.isOk && !it.isBlank).length;
+            const countBlanco2 = allQ2.filter((it) => it.isBlank).length;
+            const STATS_FILTERS = [
+              { key: "general", label: "General", count: allQ2.length },
+              { key: "aprobadas", label: "Aprobadas", count: countAprobadas2 },
+              { key: "suspendidas", label: "Suspendidas", count: countSuspendidas2 },
+              { key: "blanco", label: "En blanco", count: countBlanco2 }
+            ];
+            const filteredQ2 = allQ2.filter((it) => {
+              if (statsReviewFilter === "aprobadas") return it.isOk;
+              if (statsReviewFilter === "suspendidas") return !it.isOk && !it.isBlank;
+              if (statsReviewFilter === "blanco") return it.isBlank;
+              return true;
+            });
+            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex gap-2 overflow-x-auto mb-5 pb-1 -mx-1 px-1", style: { WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }, children: STATS_FILTERS.map((f) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                "button",
+                {
+                  onClick: () => setStatsReviewFilter(f.key),
+                  className: `flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold whitespace-nowrap border flex-shrink-0 transition-colors ${statsReviewFilter === f.key ? "bg-[#1A1712] text-white border-[#1A1712]" : "bg-white text-[#8C8579] border-[rgba(30,26,18,0.1)]"}`,
+                  children: [
+                    f.label,
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `text-[10px] font-mono ${statsReviewFilter === f.key ? "text-[rgba(255,255,255,0.6)]" : "text-[#B5AFA0]"}`, children: f.count })
+                  ]
+                },
+                f.key
+              )) }),
+              filteredQ2.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "bg-white rounded-3xl p-8 text-center text-sm font-medium text-[#8C8579] border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: "No hay preguntas en esta categor\xEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-6", children: filteredQ2.map(({ q, qi, mine, isOk }) => {
+                return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                  "div",
+                  {
+                    className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]",
+                    children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-base font-bold text-[#1A1712] mb-4", children: [
+                        qi + 1,
+                        ". ",
+                        q.text
+                      ] }),
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-2.5", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                          "div",
+                          {
+                            className: `p-4 rounded-2xl border ${isOk ? "border-[#12A16B] bg-[rgba(18,161,107,0.1)]" : "border-[#E14E3C] bg-[rgba(225,78,60,0.1)]"}`,
+                            children: [
+                              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: `text-[10px] font-extrabold uppercase tracking-wider mb-1 ${isOk ? "text-[#12A16B]" : "text-[#E14E3C]"}`, children: "Tu respuesta" }),
+                              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-sm font-semibold text-[#1A1712] whitespace-pre-wrap", children: mine && mine.trim() ? mine : "(sin responder)" })
+                            ]
+                          }
+                        ),
+                        !isOk && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "p-4 rounded-2xl border border-[#12A16B] bg-[rgba(18,161,107,0.1)]", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10px] font-extrabold uppercase tracking-wider mb-1 text-[#12A16B]", children: "Respuesta correcta" }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-sm font-semibold text-[#1A1712] whitespace-pre-wrap", children: q.correctAnswer })
+                        ] })
+                      ] }),
+                      q.explanation && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mt-3.5 p-3 px-3.5 bg-[rgba(52,87,214,0.09)] rounded-xl text-xs leading-relaxed text-[rgba(26,23,18,0.58)]", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("b", { className: "text-[#3457D6]", children: "Explicaci\xF3n:" }),
+                        " ",
+                        q.explanation
                       ] })
-                    ] });
-                  })(),
-                  q.explanation && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mt-3.5 p-3 px-3.5 bg-[rgba(52,87,214,0.09)] rounded-xl text-xs leading-relaxed text-[rgba(26,23,18,0.58)]", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("b", { className: "text-[#3457D6]", children: "Explicaci\xF3n:" }),
-                    " ",
-                    q.explanation
-                  ] })
-                ]
-              },
-              qi
-            );
-          }) }),
+                    ]
+                  },
+                  qi
+                );
+              }) })
+            ] });
+          })(),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl text-center mt-8 p-8 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-5xl font-extrabold text-[#1A1712] leading-none mb-2", children: [
               (s.questions.length ? s.score / s.questions.length * 10 : 0).toFixed(2),
@@ -18858,7 +18893,7 @@ B) Opci\xF3n B*` }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
               "button",
               {
-                onClick: () => setStatsSectionReview(null),
+                onClick: () => { setStatsReviewFilter("general"); setStatsSectionReview(null); },
                 className: "text-sm font-bold text-[#E14E3C] bg-transparent border-none cursor-pointer hover:opacity-85",
                 children: s.isAdminReview ? "\u2190 Volver a resultados" : "Volver a estad\xEDsticas"
               }
@@ -18871,7 +18906,7 @@ B) Opci\xF3n B*` }),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
             "button",
             {
-              onClick: () => setStatsSectionReview(null),
+              onClick: () => { setStatsReviewFilter("general"); setStatsSectionReview(null); },
               className: "p-2 -ml-2 text-[#E14E3C] hover:opacity-80 transition-opacity",
               children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChevronLeft, { size: 24 })
             }
@@ -19262,6 +19297,7 @@ B) Opci\xF3n B*` }),
                                     "button",
                                     {
                                       onClick: () => {
+                                        setStatsReviewFilter("general");
                                         setStatsSectionReview({
                                           submitted: true,
                                           isAdminReview: true,
@@ -19879,6 +19915,7 @@ Cancelar = mantener el examen guardado`) : true;
                                     "button",
                                     {
                                       onClick: () => {
+                                        setStatsReviewFilter("general");
                                         setStatsSectionReview({
                                           submitted: true,
                                           isAdminReview: true,
@@ -20409,6 +20446,7 @@ Cancelar = mantener el examen guardado`) : true;
                     if (!fullTest) return;
                     const myResult = fullTest.results && fullTest.results[my.uid];
                     if (!myResult) return;
+                    setStatsReviewFilter("general");
                     setStatsSectionReview({
                       submitted: true,
                       category: h.week != null ? `Semana ${h.week}` : h.title,
@@ -20532,6 +20570,7 @@ Cancelar = mantener el examen guardado`) : true;
         {
           onClick: () => {
             setActiveView(key);
+            setStatsReviewFilter("general");
             setStatsSectionReview(null);
           },
           className: `flex-1 text-xs font-extrabold py-2.5 rounded-xl transition-all ${activeView === key ? "bg-white text-[#1A1712] shadow-[0_1px_1px_rgba(26,23,18,0.04),0_3px_8px_rgba(26,23,18,0.1)]" : "text-[rgba(26,23,18,0.58)]"}`,
