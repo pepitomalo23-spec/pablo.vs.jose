@@ -18859,53 +18859,46 @@ B) Opci\xF3n B*` }),
     const renderTabContent = () => {
       if (activeView === "temario") {
         const sortedSchedule = [...schedule].sort((a, b) => a.week - b.week);
+        const dedupeItems = (values) => {
+          const map = /* @__PURE__ */ new Map();
+          values.forEach((raw) => {
+            const text = (raw || "").trim();
+            if (!text) return;
+            map.set(text, (map.get(text) || 0) + 1);
+          });
+          return Array.from(map.entries()).map(([text, count]) => ({ text, count }));
+        };
+        const specItems = dedupeItems(sortedSchedule.map((s) => s.spec));
+        const legItems = dedupeItems(sortedSchedule.map((s) => s.leg));
+        const renderGroup = (items, label, colorClass, bgClass, borderClass) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `text-[11px] font-black ${colorClass} uppercase tracking-widest mb-3 flex items-center gap-1.5`, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 13 }),
+            label
+          ] }),
+          items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+            "div",
+            {
+              className: `relative p-3 pr-11 ${bgClass} border ${borderClass} rounded-2xl`,
+              children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: item.text }),
+                item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${colorClass} bg-white border ${borderClass} rounded-full px-1.5 py-0.5 leading-none`, children: [
+                  "x",
+                  item.count
+                ] })
+              ]
+            },
+            item.text + idx
+          )) })
+        ] });
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-5", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mb-5.5", children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { className: "text-xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: t("syllabusTitle") }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: t("syllabusSubtitle") })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-4", children: sortedSchedule.map((s) => {
-            const examDate = s.end ? new Date(s.end[0], s.end[1] - 1, s.end[2]) : null;
-            const formattedExamDate = examDate ? `${String(examDate.getDate()).padStart(2, "0")}/${String(examDate.getMonth() + 1).padStart(2, "0")}/${examDate.getFullYear()}` : "Por asignar";
-            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-              "div",
-              {
-                className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)] hover:shadow-md transition-all",
-                children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-[rgba(30,26,18,0.06)]", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "text-sm font-black text-[#1A1712] bg-[#F1EDE3] px-3.5 py-1 rounded-full uppercase tracking-wider", children: [
-                      "Semana ",
-                      s.week
-                    ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-center gap-1.5 text-xs font-bold text-[#E14E3C] bg-[rgba(225,78,60,0.08)] px-3 py-1 rounded-full", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Calendar, { size: 13 }),
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { children: [
-                        "Examen: ",
-                        formattedExamDate
-                      ] })
-                    ] })
-                  ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl flex flex-col justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5 flex items-center gap-1.5", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 12 }),
-                        t("specificLabel")
-                      ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: s.spec })
-                    ] }) }),
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl flex flex-col justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5 flex items-center gap-1.5", children: [
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 12 }),
-                        t("legislationLabel")
-                      ] }),
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: s.leg })
-                    ] }) })
-                  ] })
-                ]
-              },
-              s.week
-            );
-          }) })
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4", children: [
+            renderGroup(specItems, t("specificLabel"), "text-[#E14E3C]", "bg-[rgba(225,78,60,0.04)]", "border-[rgba(225,78,60,0.15)]"),
+            renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "bg-[rgba(52,87,214,0.04)]", "border-[rgba(52,87,214,0.15)]")
+          ] })
         ] });
       }
       if (activeView === "manage" && my.role === "admin") {
