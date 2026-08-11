@@ -18870,9 +18870,9 @@ B) Opci\xF3n B*` }),
             const prev = map.get(text);
             if (prev) {
               prev.count += 1;
-              prev.allSeen = prev.allSeen && passed;
+              prev.seen = prev.seen || passed;
             } else {
-              map.set(text, { text, count: 1, allSeen: passed });
+              map.set(text, { text, count: 1, seen: passed });
             }
           });
           return Array.from(map.values());
@@ -18885,20 +18885,19 @@ B) Opci\xF3n B*` }),
             label
           ] }),
           items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => {
-            const seenBg = "bg-[rgba(18,161,107,0.07)]";
-            const seenBorder = "border-[rgba(18,161,107,0.3)]";
-            const seenColor = "text-[#12A16B]";
-            const itemBg = item.allSeen ? seenBg : bgClass;
-            const itemBorder = item.allSeen ? seenBorder : borderClass;
-            const itemBadgeColor = item.allSeen ? seenColor : colorClass;
+            const itemBg = item.seen ? "bg-[#12A16B]" : bgClass;
+            const itemBorder = item.seen ? "border-[#0E8A5B]" : borderClass;
+            const itemBadgeColor = item.seen ? "text-[#12A16B]" : colorClass;
+            const itemBadgeBorder = item.seen ? "border-[rgba(18,161,107,0.4)]" : borderClass;
+            const textColor = item.seen ? "text-white" : "text-[#1A1712]";
             return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
               "div",
               {
-                className: `relative p-3 pr-11 ${itemBg} border ${itemBorder} rounded-2xl transition-colors`,
+                className: `relative p-3 pr-11 ${item.seen ? "pl-11" : ""} ${itemBg} border ${itemBorder} rounded-2xl transition-colors`,
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: item.text }),
-                  item.allSeen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "absolute bottom-2.5 right-2.5 w-4 h-4 rounded-full bg-[#12A16B] text-white text-[10px] font-black flex items-center justify-center leading-none", children: "\u2713" }),
-                  item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${itemBadgeColor} bg-white border ${itemBorder} rounded-full px-1.5 py-0.5 leading-none`, children: [
+                  item.seen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-[#12A16B] text-base font-black flex items-center justify-center leading-none shadow-sm", children: "\u2713" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: `text-sm font-bold ${textColor} leading-snug`, children: item.text }),
+                  item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${itemBadgeColor} bg-white border ${itemBadgeBorder} rounded-full px-1.5 py-0.5 leading-none`, children: [
                     "x",
                     item.count
                   ] })
