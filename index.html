@@ -16883,10 +16883,10 @@
             const countSuspendidas = allQ.filter((it) => !it.isOk && !it.isBlank).length;
             const countBlanco = allQ.filter((it) => it.isBlank).length;
             const FILTERS = [
-              { key: "general", label: "General", count: allQ.length },
-              { key: "aprobadas", label: "Aprobadas", count: countAprobadas },
-              { key: "suspendidas", label: "Suspendidas", count: countSuspendidas },
-              { key: "blanco", label: "En blanco", count: countBlanco }
+              { key: "general", symbol: "\u2261", title: "General (todas)", count: allQ.length },
+              { key: "aprobadas", symbol: "\u2713", title: "Aprobadas", count: countAprobadas },
+              { key: "suspendidas", symbol: "\u2717", title: "Suspendidas", count: countSuspendidas },
+              { key: "blanco", symbol: "\u25CB", title: "En blanco", count: countBlanco }
             ];
             const filteredQ = allQ.filter((it) => {
               if (reviewFilter === "aprobadas") return it.isOk;
@@ -16899,9 +16899,11 @@
                 "button",
                 {
                   onClick: () => setReviewFilter(f.key),
+                  title: f.title,
+                  "aria-label": f.title,
                   className: `flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold whitespace-nowrap border flex-shrink-0 transition-colors ${reviewFilter === f.key ? "bg-[#1A1712] text-white border-[#1A1712]" : "bg-white text-[#8C8579] border-[rgba(30,26,18,0.1)]"}`,
                   children: [
-                    f.label,
+                    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: "text-sm leading-none", children: f.symbol }),
                     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { className: `text-[10px] font-mono ${reviewFilter === f.key ? "text-[rgba(255,255,255,0.6)]" : "text-[#B5AFA0]"}`, children: f.count })
                   ]
                 },
@@ -18821,10 +18823,10 @@ B) Opci\xF3n B*` }),
             const countSuspendidas2 = allQ2.filter((it) => !it.isOk && !it.isBlank).length;
             const countBlanco2 = allQ2.filter((it) => it.isBlank).length;
             const STATS_FILTERS = [
-              { key: "general", label: "General", count: allQ2.length },
-              { key: "aprobadas", label: "Aprobadas", count: countAprobadas2 },
-              { key: "suspendidas", label: "Suspendidas", count: countSuspendidas2 },
-              { key: "blanco", label: "En blanco", count: countBlanco2 }
+              { key: "general", symbol: "\u2261", title: "General (todas)", count: allQ2.length },
+              { key: "aprobadas", symbol: "\u2713", title: "Aprobadas", count: countAprobadas2 },
+              { key: "suspendidas", symbol: "\u2717", title: "Suspendidas", count: countSuspendidas2 },
+              { key: "blanco", symbol: "\u25CB", title: "En blanco", count: countBlanco2 }
             ];
             const filteredQ2 = allQ2.filter((it) => {
               if (statsReviewFilter === "aprobadas") return it.isOk;
@@ -18837,9 +18839,11 @@ B) Opci\xF3n B*` }),
                 "button",
                 {
                   onClick: () => setStatsReviewFilter(f.key),
+                  title: f.title,
+                  "aria-label": f.title,
                   className: `flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold whitespace-nowrap border flex-shrink-0 transition-colors ${statsReviewFilter === f.key ? "bg-[#1A1712] text-white border-[#1A1712]" : "bg-white text-[#8C8579] border-[rgba(30,26,18,0.1)]"}`,
                   children: [
-                    f.label,
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-sm leading-none", children: f.symbol }),
                     /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `text-[10px] font-mono ${statsReviewFilter === f.key ? "text-[rgba(255,255,255,0.6)]" : "text-[#B5AFA0]"}`, children: f.count })
                   ]
                 },
