@@ -18276,7 +18276,6 @@ B) Opci\xF3n B*` }),
     const [notifStatus, setNotifStatus] = (0, import_react7.useState)("");
     const [notifLoading, setNotifLoading] = (0, import_react7.useState)(false);
     const [statsSectionReview, setStatsSectionReview] = (0, import_react7.useState)(null);
-    const [myExamsFilter, setMyExamsFilter] = (0, import_react7.useState)("general");
     const [addingQuestionOpen, setAddingQuestionOpen] = (0, import_react7.useState)(false);
     const [qText, setQText] = (0, import_react7.useState)("");
     const [qAnswer, setQAnswer] = (0, import_react7.useState)("");
@@ -20384,39 +20383,12 @@ Cancelar = mantener el examen guardado`) : true;
               isSuspended
             };
           }).sort((a2, b2) => (b2.completedAt || "").localeCompare(a2.completedAt || ""));
-          const countAprobados = myHistory.filter((h2) => h2.isApproved).length;
-          const countSuspendidos = myHistory.filter((h2) => h2.isSuspended).length;
-          const countBlanco = myHistory.filter((h2) => h2.isBlank).length;
-          const MY_EXAMS_FILTERS = [
-            { key: "general", label: "General", count: myHistory.length },
-            { key: "aprobadas", label: "Aprobadas", count: countAprobados },
-            { key: "suspendidas", label: "Suspendidas", count: countSuspendidos },
-            { key: "blanco", label: "En blanco", count: countBlanco }
-          ];
-          const filteredHistory = myHistory.filter((h2) => {
-            if (myExamsFilter === "aprobadas") return h2.isApproved;
-            if (myExamsFilter === "suspendidas") return h2.isSuspended;
-            if (myExamsFilter === "blanco") return h2.isBlank;
-            return true;
-          });
           return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("h3", { className: "text-base font-bold text-[#1A1712] mb-1", children: [
               "Mis ex\xE1menes completados"
             ] }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] mb-4", children: "Aqu\xED se guardan autom\xE1ticamente todos los ex\xE1menes que has terminado, con tu nota y la fecha." }),
-            myHistory.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex gap-2 overflow-x-auto mb-4 pb-1 -mx-1 px-1", style: { WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }, children: MY_EXAMS_FILTERS.map((f) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-              "button",
-              {
-                onClick: () => setMyExamsFilter(f.key),
-                className: `flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold whitespace-nowrap border flex-shrink-0 transition-colors ${myExamsFilter === f.key ? "bg-[#1A1712] text-white border-[#1A1712]" : "bg-[#FAF8F5] text-[#8C8579] border-[rgba(30,26,18,0.08)]"}`,
-                children: [
-                  f.label,
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `text-[10px] font-mono ${myExamsFilter === f.key ? "text-[rgba(255,255,255,0.6)]" : "text-[#B5AFA0]"}`, children: f.count })
-                ]
-              },
-              f.key
-            )) }),
-            myHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] text-center py-3", children: "Todav\xEDa no has completado ning\xFAn examen." }) : filteredHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] text-center py-3", children: "No hay ex\xE1menes en esta categor\xEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2 max-h-[360px] overflow-y-auto pr-1", children: filteredHistory.map((h) => {
+            myHistory.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] text-center py-3", children: "Todav\xEDa no has completado ning\xFAn examen." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2 max-h-[360px] overflow-y-auto pr-1", children: myHistory.map((h) => {
               const pct = h.total ? Math.round(h.score / h.total * 100) : 0;
               const scoreDisplay = (h.total ? h.score / h.total * 10 : 0).toFixed(2);
               let dateLabel = "";
