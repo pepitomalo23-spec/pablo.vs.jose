@@ -18879,28 +18879,71 @@ B) Opci\xF3n B*` }),
         };
         const specItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.spec, end: s.end })));
         const legItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.leg, end: s.end })));
-        const renderGroup = (items, label, colorClass, bgClass, borderClass) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
+        const renderGroup = (items, label, colorClass, accentHex) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `text-[11px] font-black ${colorClass} uppercase tracking-widest mb-3 flex items-center gap-1.5`, children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 13 }),
             label
           ] }),
           items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => {
-            const itemBg = item.seen ? "bg-[#12A16B]" : bgClass;
-            const itemBorder = item.seen ? "border-[#0E8A5B]" : borderClass;
-            const itemBadgeColor = item.seen ? "text-[#12A16B]" : colorClass;
-            const itemBadgeBorder = item.seen ? "border-[rgba(18,161,107,0.4)]" : borderClass;
-            const textColor = item.seen ? "text-white" : "text-[#1A1712]";
             return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
               "div",
               {
-                className: `relative p-3 pr-11 ${item.seen ? "pl-11" : ""} ${itemBg} border ${itemBorder} rounded-2xl transition-colors`,
+                className: "relative rounded-2xl border transition-colors",
+                style: {
+                  padding: "12px",
+                  paddingLeft: item.seen ? "40px" : "12px",
+                  paddingRight: item.count > 1 ? "40px" : "12px",
+                  backgroundColor: item.seen ? "#12A16B" : `${accentHex}0a`,
+                  borderColor: item.seen ? "#0E8A5B" : `${accentHex}26`
+                },
                 children: [
-                  item.seen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "absolute left-2 top-2 w-6 h-6 rounded-full bg-white text-[#12A16B] text-base font-black flex items-center justify-center leading-none shadow-sm", children: "\u2713" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: `text-sm font-bold ${textColor} leading-snug`, children: item.text }),
-                  item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: `absolute top-2 right-2 text-[10px] font-black ${itemBadgeColor} bg-white border ${itemBadgeBorder} rounded-full px-1.5 py-0.5 leading-none`, children: [
-                    "x",
-                    item.count
-                  ] })
+                  item.seen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                    "span",
+                    {
+                      style: {
+                        position: "absolute",
+                        left: "8px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: "26px",
+                        height: "26px",
+                        borderRadius: "9999px",
+                        background: "#fff",
+                        color: "#12A16B",
+                        fontSize: "15px",
+                        fontWeight: 900,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        lineHeight: 1,
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+                      },
+                      children: "\u2713"
+                    }
+                  ),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold leading-snug", style: { color: item.seen ? "#fff" : "#1A1712" }, children: item.text }),
+                  item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                    "span",
+                    {
+                      style: {
+                        position: "absolute",
+                        top: "8px",
+                        right: "8px",
+                        fontSize: "10px",
+                        fontWeight: 900,
+                        lineHeight: 1,
+                        color: item.seen ? "#12A16B" : accentHex,
+                        background: "#fff",
+                        border: `1px solid ${item.seen ? "rgba(18,161,107,0.4)" : accentHex + "40"}`,
+                        borderRadius: "9999px",
+                        padding: "3px 6px"
+                      },
+                      children: [
+                        "x",
+                        item.count
+                      ]
+                    }
+                  )
                 ]
               },
               item.text + idx
@@ -18913,8 +18956,8 @@ B) Opci\xF3n B*` }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: t("syllabusSubtitle") })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4", children: [
-            renderGroup(specItems, t("specificLabel"), "text-[#E14E3C]", "bg-[rgba(225,78,60,0.04)]", "border-[rgba(225,78,60,0.15)]"),
-            renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "bg-[rgba(52,87,214,0.04)]", "border-[rgba(52,87,214,0.15)]")
+            renderGroup(specItems, t("specificLabel"), "text-[#E14E3C]", "#E14E3C"),
+            renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "#3457D6")
           ] })
         ] });
       }
