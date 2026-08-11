@@ -14616,6 +14616,8 @@
     const [deckName, setDeckName] = (0, import_react4.useState)("");
     const [cardFront, setCardFront] = (0, import_react4.useState)("");
     const [cardBack, setCardBack] = (0, import_react4.useState)("");
+    const [isAddingCard, setIsAddingCard] = (0, import_react4.useState)(false);
+    const isAddingCardRef = (0, import_react4.useRef)(false);
     const isAdmin = my.role === "admin";
     const [studyQueue, setStudyQueue] = (0, import_react4.useState)([]);
     const [studyPos, setStudyPos] = (0, import_react4.useState)(0);
@@ -14797,26 +14799,34 @@
       showToast("Mazo eliminado", "");
     };
     const handleAddCard = async () => {
+      if (isAddingCardRef.current) return;
       if (!cardFront.trim() || !cardBack.trim()) {
         showToast("Faltan datos", "Rellena el anverso y el reverso");
         return;
       }
       if (!activeDeckId) return;
-      const newCards = [
-        {
-          id: "c" + Date.now() + Math.random().toString(36).slice(2, 6),
-          deckId: activeDeckId,
-          front: cardFront.trim(),
-          back: cardBack.trim(),
-          createdBy: my.uid,
-          createdAt: (/* @__PURE__ */ new Date()).toISOString()
-        },
-        ...ankiCards
-      ];
-      await onSaveCards(newCards);
-      showToast("Tarjeta a\xF1adida", cardFront.trim().slice(0, 40) + (cardFront.length > 40 ? "..." : ""));
-      setCardFront("");
-      setCardBack("");
+      isAddingCardRef.current = true;
+      setIsAddingCard(true);
+      try {
+        const newCards = [
+          {
+            id: "c" + Date.now() + Math.random().toString(36).slice(2, 6),
+            deckId: activeDeckId,
+            front: cardFront.trim(),
+            back: cardBack.trim(),
+            createdBy: my.uid,
+            createdAt: (/* @__PURE__ */ new Date()).toISOString()
+          },
+          ...ankiCards
+        ];
+        await onSaveCards(newCards);
+        showToast("Tarjeta a\xF1adida", cardFront.trim().slice(0, 40) + (cardFront.length > 40 ? "..." : ""));
+        setCardFront("");
+        setCardBack("");
+      } finally {
+        isAddingCardRef.current = false;
+        setIsAddingCard(false);
+      }
     };
     const handleDeleteCard = async (cardId) => {
       if (!confirm("\xBFEliminar esta tarjeta?")) return;
@@ -15691,8 +15701,9 @@
             "button",
             {
               onClick: handleAddCard,
-              className: "fixed sm:static bottom-5 left-5 right-5 sm:left-auto sm:right-auto sm:w-full bg-[#E14E3C] text-white border-none rounded-full py-3.5 font-bold text-base cursor-pointer hover:brightness-95 transition-all font-sans z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)]",
-              children: "Guardar tarjeta"
+              disabled: isAddingCard,
+              className: "fixed sm:static bottom-5 left-5 right-5 sm:left-auto sm:right-auto sm:w-full bg-[#E14E3C] text-white border-none rounded-full py-3.5 font-bold text-base cursor-pointer hover:brightness-95 transition-all font-sans z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)] disabled:opacity-40 disabled:cursor-not-allowed",
+              children: isAddingCard ? "Guardando\u2026" : "Guardar tarjeta"
             }
           )
         ] }),
@@ -16282,7 +16293,7 @@
             }
           ),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "sm:hidden", style: { height: "76px" } }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: handleAddCard, className: "n2-cta fixed sm:static bottom-5 right-5 left-5 sm:left-auto sm:right-auto sm:w-full z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)]", children: "Guardar tarjeta" })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: handleAddCard, disabled: isAddingCard, className: "n2-cta fixed sm:static bottom-5 right-5 left-5 sm:left-auto sm:right-auto sm:w-full z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)] disabled:opacity-40 disabled:cursor-not-allowed", children: isAddingCard ? "Guardando\u2026" : "Guardar tarjeta" })
         ] }) });
       }
       const wrapCls = "opt-fade-in-up pb-12";
@@ -16325,8 +16336,9 @@
           "button",
           {
             onClick: handleAddCard,
-            className: "fixed sm:static bottom-5 left-5 right-5 sm:left-auto sm:right-auto sm:w-full bg-[#E14E3C] text-white border-none rounded-full py-4 font-bold text-base cursor-pointer hover:brightness-95 transition-all font-sans z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)]",
-            children: "Guardar tarjeta"
+            disabled: isAddingCard,
+            className: "fixed sm:static bottom-5 left-5 right-5 sm:left-auto sm:right-auto sm:w-full bg-[#E14E3C] text-white border-none rounded-full py-4 font-bold text-base cursor-pointer hover:brightness-95 transition-all font-sans z-40 shadow-[0_14px_32px_-10px_rgba(225,78,60,0.55)] disabled:opacity-40 disabled:cursor-not-allowed",
+            children: isAddingCard ? "Guardando\u2026" : "Guardar tarjeta"
           }
         )
       ] });
