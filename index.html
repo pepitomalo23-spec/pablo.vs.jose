@@ -851,7 +851,7 @@
     // Messaging y SIN plan de pago).
     // ------------------------------------------------------------
     // Esta es la clave PÚBLICA VAPID generada para esta app. Su
-    // pareja privada vive solo en la función de Netlify que envía
+    // pareja privada vive solo en la función de Vercel que envía
     // los avisos (send-notification.js), nunca aquí.
     // ============================================================
     const PUSH_VAPID_PUBLIC_KEY = "BOlozAKUr25UXMhCdW3RekIiSRZPSGnwZaMyJuLmO5N8Z9UOrjYXZ5H8KPX6CrH4RnRhY5Bxzaau-oM8DPTa1J4";
@@ -916,12 +916,12 @@
       };
 
       // -------- Enviar un aviso al compañero --------
-      // Llama a la función de Netlify que de verdad manda el push
+      // Llama a la función de Vercel que de verdad manda el push
       // (esto no usa Firebase para nada, solo Firestore para leer
       // la suscripción guardada del otro usuario).
       window.__optNotifyPeer = async function(subscription, title, body) {
         try {
-          await fetch("/.netlify/functions/send-notification", {
+          await fetch("/api/send-notification", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ subscription, title, body })

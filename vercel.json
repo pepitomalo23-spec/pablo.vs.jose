@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/send-notification.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
+}

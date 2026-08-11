@@ -1,10 +1,10 @@
 // push-sw.js
 // Este archivo tiene que estar en la RAÍZ de tu sitio (junto a index.html)
-// para que sea accesible en https://tu-dominio.netlify.app/push-sw.js
+// para que sea accesible en https://tu-dominio.vercel.app/push-sw.js
 //
 // Es un service worker de Web Push "de toda la vida" (el estándar del
 // navegador), sin ninguna dependencia de Firebase. Recibe el aviso que
-// manda nuestra función de Netlify y lo muestra como notificación,
+// manda nuestra función de Vercel y lo muestra como notificación,
 // aunque la web esté cerrada.
 self.addEventListener("push", (event) => {
   let data = {};
