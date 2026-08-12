@@ -825,13 +825,19 @@
           display: grid;
           grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
           gap: 20px;
-          align-items: start;
+          align-items: stretch;
         }
         .opt-dash-cols > *:not(:last-child) {
           margin-block-start: 0 !important;
           margin-block-end: 0 !important;
         }
-        .opt-dash-left { position: sticky; top: 24px; }
+        .opt-dash-left { height: 100%; }
+        .opt-dash-left > * {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
       }
     </style>
   </head>
@@ -14579,18 +14585,18 @@
             }
           )
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)] text-center", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-4", children: t("weekStudyTitle") }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl flex flex-col justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5 flex items-center gap-1.5", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl flex flex-col items-center justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5 flex items-center justify-center gap-1.5", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Book, { size: 12 }),
                 t("specificLabel")
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: currentSchedule.spec })
             ] }) }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl flex flex-col justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5 flex items-center gap-1.5", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl flex flex-col items-center justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5 flex items-center justify-center gap-1.5", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Book, { size: 12 }),
                 t("legislationLabel")
               ] }),
@@ -14602,16 +14608,16 @@
           "div",
           {
             onClick: () => onTabChange("calendar"),
-            className: "bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)] cursor-pointer relative",
+            className: "bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)] cursor-pointer relative text-center",
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute top-5.5 right-5.5 text-[#8C8579]", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { size: 20 }) }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { className: "text-lg font-bold text-[#1A1712] mb-4", children: t("nextWeekTitle") }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", { className: "space-y-3", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: "flex items-center gap-3 text-sm font-semibold text-[#1A1712]", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: "flex items-center justify-center gap-3 text-sm font-semibold text-[#1A1712]", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-1.5 h-1.5 rounded-full bg-[#D8D2C2]" }),
                   nextSchedule.spec
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: "flex items-center gap-3 text-sm font-semibold text-[#1A1712]", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { className: "flex items-center justify-center gap-3 text-sm font-semibold text-[#1A1712]", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-1.5 h-1.5 rounded-full bg-[#D8D2C2]" }),
                   nextSchedule.leg
                 ] })
