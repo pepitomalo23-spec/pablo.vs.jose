@@ -18429,6 +18429,8 @@ B) Opci\xF3n B*` }),
     onRemoveWatchedLaw,
     lawUpdateNotices,
     onMarkLawNoticeSeen,
+    legislationDetails,
+    onSaveLegislationDetails,
     forceAdminView = false
   }) => {
     const [activeView, setActiveView] = (0, import_react7.useState)(
@@ -18485,6 +18487,10 @@ B) Opci\xF3n B*` }),
     const [advancedSettingsOpen, setAdvancedSettingsOpen] = (0, import_react7.useState)(false);
     const [advancedTab, setAdvancedTab] = (0, import_react7.useState)("accounts");
     const [studentPreview, setStudentPreview] = (0, import_react7.useState)(null);
+    const [expandedLegName, setExpandedLegName] = (0, import_react7.useState)(null);
+    const [legLineType, setLegLineType] = (0, import_react7.useState)("titulo");
+    const [legLineText, setLegLineText] = (0, import_react7.useState)("");
+    const [openLegItems, setOpenLegItems] = (0, import_react7.useState)({});
     if (studentPreview) {
       return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "min-h-screen bg-[#FDFBF8] px-4 sm:px-6 py-6 sm:py-8", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "max-w-2xl mx-auto", children: [
         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
@@ -18525,6 +18531,29 @@ B) Opci\xF3n B*` }),
       "Diciembre"
     ];
     const DAYS_FULL = ["Domingo", "Lunes", "Martes", "Mi\xE9rcoles", "Jueves", "Viernes", "S\xE1bado"];
+    const LEG_LINE_TYPES = [
+      { key: "titulo", label: "T\xEDtulo", color: "#E14E3C" },
+      { key: "capitulo", label: "Cap\xEDtulo", color: "#3457D6" },
+      { key: "articulo", label: "Art\xEDculo", color: "#8B5CF6" }
+    ];
+    const legLineTypeInfo = (key) => LEG_LINE_TYPES.find((lt) => lt.key === key) || LEG_LINE_TYPES[0];
+    const handleAddLegLine = (lawName) => {
+      const text = legLineText.trim();
+      if (!text) {
+        showToast("Falta el texto", "Escribe el t\xEDtulo, cap\xEDtulo o art\xEDculo antes de a\xF1adirlo.");
+        return;
+      }
+      const current = (legislationDetails && legislationDetails[lawName]) || [];
+      const nextLine = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type: legLineType, text };
+      const nextItems = [...current, nextLine];
+      onSaveLegislationDetails(lawName, nextItems);
+      setLegLineText("");
+    };
+    const handleRemoveLegLine = (lawName, lineId) => {
+      const current = (legislationDetails && legislationDetails[lawName]) || [];
+      const nextItems = current.filter((l) => l.id !== lineId);
+      onSaveLegislationDetails(lawName, nextItems);
+    };
     const handleUpdatePassword = async () => {
       if (!currentPass || !newPass) {
         setPasswordStatus("Rellena las dos contrase\xF1as.");
@@ -19171,12 +19200,16 @@ B) Opci\xF3n B*` }),
         };
         const specItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.spec, end: s.end })));
         const legItems = dedupeItems(sortedSchedule.map((s) => ({ text: s.leg, end: s.end })));
-        const renderGroup = (items, label, colorClass, accentHex) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
+        const renderGroup = (items, label, colorClass, accentHex, opts) => {
+          const clickable = !!(opts && opts.clickable);
+          return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)]", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: `text-[11px] font-black ${colorClass} uppercase tracking-widest mb-3 flex items-center gap-1.5`, children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(Book, { size: 13 }),
             label
           ] }),
           items.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] italic", children: "A\xFAn no has a\xF1adido nada aqu\xED." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: items.map((item, idx) => {
+            const isOpen = clickable && !!openLegItems[item.text];
+            const detailLines = clickable ? (legislationDetails && legislationDetails[item.text] || []) : [];
             return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
               "div",
               {
@@ -19186,8 +19219,10 @@ B) Opci\xF3n B*` }),
                   paddingLeft: item.seen ? "40px" : "12px",
                   paddingRight: item.count > 1 ? "40px" : "12px",
                   backgroundColor: item.seen ? "#12A16B" : `${accentHex}0a`,
-                  borderColor: item.seen ? "#0E8A5B" : `${accentHex}26`
+                  borderColor: item.seen ? "#0E8A5B" : `${accentHex}26`,
+                  cursor: clickable ? "pointer" : "default"
                 },
+                onClick: clickable ? () => setOpenLegItems((prev) => ({ ...prev, [item.text]: !prev[item.text] })) : void 0,
                 children: [
                   item.seen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                     "span",
@@ -19213,7 +19248,17 @@ B) Opci\xF3n B*` }),
                       children: "\u2713"
                     }
                   ),
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold leading-snug", style: { color: item.seen ? "#fff" : "#1A1712" }, children: item.text }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-center gap-1.5", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-bold leading-snug flex-1", style: { color: item.seen ? "#fff" : "#1A1712" }, children: item.text }),
+                    clickable && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChevronRight, {
+                      size: 15,
+                      style: {
+                        color: item.seen ? "#fff" : accentHex,
+                        transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                        transition: "transform 0.15s"
+                      }
+                    })
+                  ] }),
                   item.count > 1 && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                     "span",
                     {
@@ -19235,13 +19280,29 @@ B) Opci\xF3n B*` }),
                         item.count
                       ]
                     }
-                  )
+                  ),
+                  clickable && isOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { onClick: (e) => e.stopPropagation(), className: "mt-3 pt-3 border-t border-[rgba(30,26,18,0.08)] space-y-1.5", children: detailLines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic", style: { color: item.seen ? "rgba(255,255,255,0.8)" : "#8C8579" }, children: "El administrador todav\xEDa no ha a\xF1adido el desglose (t\xEDtulos, cap\xEDtulos o art\xEDculos) de esta ley." }) : detailLines.map((line) => {
+                    const info = legLineTypeInfo(line.type);
+                    return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                      "div",
+                      {
+                        className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5",
+                        style: { backgroundColor: item.seen ? "rgba(255,255,255,0.14)" : `${info.color}12` },
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: item.seen ? "#fff" : info.color }, children: info.label }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug", style: { color: item.seen ? "#fff" : "#1A1712" }, children: line.text })
+                        ]
+                      },
+                      line.id
+                    );
+                  }) })
                 ]
               },
               item.text + idx
             );
           }) })
-        ] });
+          ] });
+        };
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-5", children: [
           (() => {
             const myNotices = (lawUpdateNotices || []).filter((n) => !(n.seenBy || []).includes(my.uid));
@@ -19289,12 +19350,15 @@ B) Opci\xF3n B*` }),
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 syllabus-columns", children: [
             renderGroup(specItems, t("specificLabel"), "text-[#E14E3C]", "#E14E3C"),
-            renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "#3457D6")
+            renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "#3457D6", { clickable: true })
           ] })
         ] });
       }
       if (activeView === "manage" && my.role === "admin") {
         const sortedSchedule = [...schedule].sort((a, b) => a.week - b.week);
+        const legNames = Array.from(/* @__PURE__ */ new Set(
+          sortedSchedule.flatMap((s) => (s.leg || "").split("+").map((p) => p.trim()).filter(Boolean))
+        ));
         const normativaTemasBank = (ankiDecks || []).filter((d) => d.parentId === "normativas").map((d) => d.name);
         const dateVal = (arr) => {
           if (!arr) return "";
@@ -19817,6 +19881,91 @@ Cancelar = mantener el examen guardado`) : true;
           }) }),
             ] });
           }
+        }
+        if (expandedLegName) {
+          const lines = (legislationDetails && legislationDetails[expandedLegName]) || [];
+          return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-6 opt-fade-in-up", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+              "button",
+              {
+                onClick: () => {
+                  setExpandedLegName(null);
+                  setLegLineText("");
+                },
+                className: "flex items-center gap-1.5 text-xs font-extrabold text-[#8C8579] hover:text-[#1A1712] transition-all cursor-pointer bg-transparent border-none p-0",
+                children: ["\u2190", " Volver a Legislaci\xF3n del temario"]
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-6 border border-[rgba(30,26,18,0.07)] shadow-sm space-y-5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-xs font-black text-[#3457D6] uppercase tracking-wider bg-[rgba(52,87,214,0.08)] px-3 py-1 rounded-full", children: "Legislaci\xF3n" }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { className: "text-lg font-extrabold text-[#1A1712] mt-2", children: expandedLegName })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Desglose a\xF1adido" }),
+                lines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "Todav\xEDa no has a\xF1adido ning\xFAn t\xEDtulo, cap\xEDtulo o art\xEDculo." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-1.5", children: lines.map((line) => {
+                  const info = legLineTypeInfo(line.type);
+                  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                    "div",
+                    {
+                      className: "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
+                      style: { backgroundColor: `${info.color}12`, border: `1px solid ${info.color}30` },
+                      children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 min-w-0", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: info.color }, children: info.label }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-sm font-semibold text-[#1A1712]", children: line.text })
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                          "button",
+                          {
+                            onClick: () => handleRemoveLegLine(expandedLegName, line.id),
+                            className: "shrink-0 text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#E14E3C]",
+                            children: "Quitar"
+                          }
+                        )
+                      ]
+                    },
+                    line.id
+                  );
+                }) })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "pt-4 border-t border-[rgba(30,26,18,0.08)] space-y-3", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "A\xF1adir l\xEDnea" }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex gap-2 flex-wrap", children: LEG_LINE_TYPES.map((lt2) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "button",
+                  {
+                    onClick: () => setLegLineType(lt2.key),
+                    className: "rounded-full px-4 py-1.5 text-xs font-extrabold border-none cursor-pointer transition-all",
+                    style: legLineType === lt2.key ? { backgroundColor: lt2.color, color: "#fff" } : { backgroundColor: `${lt2.color}14`, color: lt2.color },
+                    children: lt2.label
+                  },
+                  lt2.key
+                )) }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                    "input",
+                    {
+                      value: legLineText,
+                      onChange: (e) => setLegLineText(e.target.value),
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter") handleAddLegLine(expandedLegName);
+                      },
+                      placeholder: legLineType === "titulo" ? "Ej: T\xEDtulo I. De los derechos y deberes fundamentales" : legLineType === "capitulo" ? "Ej: Cap\xEDtulo II. Derechos y libertades" : "Ej: Art\xEDculos 14 a 29",
+                      className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-3 px-4 font-semibold text-sm text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.35)] focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all"
+                    }
+                  ),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                    "button",
+                    {
+                      onClick: () => handleAddLegLine(expandedLegName),
+                      className: "shrink-0 bg-[#1A1712] text-white border-none rounded-2xl px-5 font-bold text-xs cursor-pointer hover:brightness-95 transition-all",
+                      children: "A\xF1adir"
+                    }
+                  )
+                ] })
+              ] })
+            ] })
+          ] });
         }
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-6 opt-fade-in-up", children: [
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2", children: [
@@ -20723,6 +20872,30 @@ Cancelar = mantener el examen guardado`) : true;
                 )) })
               ] })
             ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-6 border border-[rgba(30,26,18,0.07)] shadow-sm space-y-4", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { className: "text-base font-bold text-[#1A1712]", children: "\u{1F4D8} Legislaci\xF3n del temario" }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] font-medium mt-0.5", children: "Pulsa una ley para a\xF1adir a mano sus t\xEDtulos, cap\xEDtulos o art\xEDculos. Se mostrar\xE1n a los opositores en su Temario." })
+            ] }),
+            legNames.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "Todav\xEDa no hay ninguna legislaci\xF3n en el temario. A\xF1ade primero una fecha de examen con su campo de Legislaci\xF3n." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: legNames.map((name) => {
+              const count = ((legislationDetails && legislationDetails[name]) || []).length;
+              return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                "button",
+                {
+                  onClick: () => setExpandedLegName(name),
+                  className: "w-full flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-[rgba(30,26,18,0.08)] bg-[#FAF8F5] hover:border-[rgba(52,87,214,0.3)] transition-all cursor-pointer text-left",
+                  children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-sm font-bold text-[#1A1712] min-w-0", children: name }),
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "shrink-0 flex items-center gap-2", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `text-[10px] font-extrabold px-2.5 py-1 rounded-full ${count > 0 ? "bg-[rgba(18,161,107,0.1)] text-[#12A16B]" : "bg-[#F1EDE3] text-[#8C8579]"}`, children: count > 0 ? `${count} l\xEDnea${count === 1 ? "" : "s"}` : "Sin a\xF1adir" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ChevronRight, { size: 16, className: "text-[rgba(26,23,18,0.32)]" })
+                    ] })
+                  ]
+                },
+                name
+              );
+            }) })
           ] }),
         ] });
       }
@@ -29790,6 +29963,7 @@ Cancelar = mantener el examen guardado`) : true;
     const [schedule, setSchedule] = (0, import_react31.useState)(() => cachedDB && cachedDB.schedule || []);
     const [normativas, setNormativas] = (0, import_react31.useState)(() => cachedDB && cachedDB.normativas || []);
     const [watchedLaws, setWatchedLaws] = (0, import_react31.useState)(() => cachedDB && cachedDB.watchedLaws || []);
+    const [legislationDetails, setLegislationDetails] = (0, import_react31.useState)(() => cachedDB && cachedDB.legislationDetails || {});
     const [lawUpdateNotices, setLawUpdateNotices] = (0, import_react31.useState)(() => cachedDB && cachedDB.lawUpdateNotices || []);
     const [ankiDecks, setAnkiDecks] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiDecks || []);
     const [ankiCards, setAnkiCards] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiCards || []);
@@ -29806,6 +29980,8 @@ Cancelar = mantener el examen guardado`) : true;
     scheduleRef.current = schedule;
     const watchedLawsRef = (0, import_react31.useRef)(watchedLaws);
     watchedLawsRef.current = watchedLaws;
+    const legislationDetailsRef = (0, import_react31.useRef)(legislationDetails);
+    legislationDetailsRef.current = legislationDetails;
     const ankiDecksRef = (0, import_react31.useRef)([]);
     ankiDecksRef.current = ankiDecks;
     const ankiCardsRef = (0, import_react31.useRef)([]);
@@ -29861,6 +30037,7 @@ Cancelar = mantener el examen guardado`) : true;
       content: {},
       schedule: [],
       normativas: [],
+      legislationDetails: {},
       ankiDecks: [
         {
           id: "normativas",
@@ -29913,6 +30090,7 @@ Cancelar = mantener el examen guardado`) : true;
       setSchedule(data.schedule || []);
       setNormativas(data.normativas || []);
       setWatchedLaws(data.watchedLaws || []);
+      setLegislationDetails(data.legislationDetails || {});
       setLawUpdateNotices(data.lawUpdateNotices || []);
       setAnkiDecks(resolveAnkiDecksForLoad(data.ankiDecks));
       setAnkiCards(data.ankiCards || []);
@@ -30086,6 +30264,8 @@ Cancelar = mantener el examen guardado`) : true;
       setNormativas(d.normativas || []);
       watchedLawsRef.current = d.watchedLaws || [];
       setWatchedLaws(d.watchedLaws || []);
+      legislationDetailsRef.current = d.legislationDetails || {};
+      setLegislationDetails(legislationDetailsRef.current);
       setLawUpdateNotices(d.lawUpdateNotices || []);
       ankiDecksRef.current = resolveAnkiDecksForLoad(d.ankiDecks);
       setAnkiDecks(ankiDecksRef.current);
@@ -31147,6 +31327,28 @@ Cancelar = mantener el examen guardado`) : true;
         console.warn("Backend connection failed, marking law notice as seen locally", e);
       }
     };
+    const handleSaveLegislationDetails = async (lawName, items) => {
+      const nextDetails = { ...(legislationDetailsRef.current || {}), [lawName]: items };
+      legislationDetailsRef.current = nextDetails;
+      setLegislationDetails(nextDetails);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.legislationDetails = nextDetails;
+        saveLocalDB(d);
+        return;
+      }
+      try {
+        await optWriteFields({ legislationDetails: nextDetails });
+      } catch (e) {
+        console.warn("Backend connection failed, saving legislation details locally", e);
+        notifyWriteFailure(e);
+        setIsOfflineMode(true);
+        localStorage.setItem("opt_is_offline_mode", "true");
+        const d = loadLocalDB();
+        d.legislationDetails = nextDetails;
+        saveLocalDB(d);
+      }
+    };
     const handleAddWeek = async (num, spec, leg, start, end) => {
       const nextSched = [...scheduleRef.current, { week: num, spec, leg, start, end }];
       scheduleRef.current = nextSched;
@@ -31706,6 +31908,8 @@ Cancelar = mantener el examen guardado`) : true;
                   onRemoveWatchedLaw: handleRemoveWatchedLaw,
                   lawUpdateNotices,
                   onMarkLawNoticeSeen: handleMarkLawNoticeSeen,
+                  legislationDetails,
+                  onSaveLegislationDetails: handleSaveLegislationDetails,
                   forceAdminView: true
                 }
               ) })
@@ -31893,7 +32097,9 @@ Cancelar = mantener el examen guardado`) : true;
                   onAddWatchedLaw: handleAddWatchedLaw,
                   onRemoveWatchedLaw: handleRemoveWatchedLaw,
                   lawUpdateNotices,
-                  onMarkLawNoticeSeen: handleMarkLawNoticeSeen
+                  onMarkLawNoticeSeen: handleMarkLawNoticeSeen,
+                  legislationDetails,
+                  onSaveLegislationDetails: handleSaveLegislationDetails
                 }
               ) })
             ]
