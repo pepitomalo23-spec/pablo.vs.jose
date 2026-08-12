@@ -29752,7 +29752,25 @@ Cancelar = mantener el examen guardado`) : true;
   };
   function App() {
     var _a, _b, _c, _d;
-    const [sessionUser, setSessionUser] = (0, import_react31.useState)(null);
+    const cachedDB = (() => {
+      try {
+        const raw = localStorage.getItem("opt_local_db");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") return parsed;
+        }
+      } catch (e) {
+      }
+      return null;
+    })();
+    const [sessionUser, setSessionUser] = (0, import_react31.useState)(() => {
+      try {
+        const savedUser = localStorage.getItem("opt_session_user");
+        if (savedUser) return JSON.parse(savedUser);
+      } catch (e) {
+      }
+      return null;
+    });
     const [usernameInput, setUsernameInput] = (0, import_react31.useState)("");
     const [passwordInput, setPasswordInput] = (0, import_react31.useState)("");
     const [loginError, setLoginError] = (0, import_react31.useState)("");
@@ -29763,19 +29781,19 @@ Cancelar = mantener el examen guardado`) : true;
     const [adminToggleMode, setAdminToggleMode] = (0, import_react31.useState)("admin");
     const [adminAlumnoTab, setAdminAlumnoTab] = (0, import_react31.useState)("home");
     const [simulatedPid, setSimulatedPid] = (0, import_react31.useState)("a");
-    const [profiles, setProfiles] = (0, import_react31.useState)({});
-    const [weeks, setWeeks] = (0, import_react31.useState)([]);
-    const [meta, setMeta] = (0, import_react31.useState)({ deadline: null, unlockedBadges: [] });
-    const [questions, setQuestions] = (0, import_react31.useState)([]);
-    const [tests, setTests] = (0, import_react31.useState)([]);
-    const [content, setContent] = (0, import_react31.useState)({});
-    const [schedule, setSchedule] = (0, import_react31.useState)([]);
-    const [normativas, setNormativas] = (0, import_react31.useState)([]);
-    const [watchedLaws, setWatchedLaws] = (0, import_react31.useState)([]);
-    const [lawUpdateNotices, setLawUpdateNotices] = (0, import_react31.useState)([]);
-    const [ankiDecks, setAnkiDecks] = (0, import_react31.useState)([]);
-    const [ankiCards, setAnkiCards] = (0, import_react31.useState)([]);
-    const [ankiProgress, setAnkiProgress] = (0, import_react31.useState)({});
+    const [profiles, setProfiles] = (0, import_react31.useState)(() => cachedDB && cachedDB.profiles || {});
+    const [weeks, setWeeks] = (0, import_react31.useState)(() => cachedDB && cachedDB.weeks || []);
+    const [meta, setMeta] = (0, import_react31.useState)(() => cachedDB && cachedDB.meta || { deadline: null, unlockedBadges: [] });
+    const [questions, setQuestions] = (0, import_react31.useState)(() => cachedDB && cachedDB.questions || []);
+    const [tests, setTests] = (0, import_react31.useState)(() => cachedDB && cachedDB.tests || []);
+    const [content, setContent] = (0, import_react31.useState)(() => cachedDB && cachedDB.content || {});
+    const [schedule, setSchedule] = (0, import_react31.useState)(() => cachedDB && cachedDB.schedule || []);
+    const [normativas, setNormativas] = (0, import_react31.useState)(() => cachedDB && cachedDB.normativas || []);
+    const [watchedLaws, setWatchedLaws] = (0, import_react31.useState)(() => cachedDB && cachedDB.watchedLaws || []);
+    const [lawUpdateNotices, setLawUpdateNotices] = (0, import_react31.useState)(() => cachedDB && cachedDB.lawUpdateNotices || []);
+    const [ankiDecks, setAnkiDecks] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiDecks || []);
+    const [ankiCards, setAnkiCards] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiCards || []);
+    const [ankiProgress, setAnkiProgress] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiProgress || {});
     const profilesRef = (0, import_react31.useRef)(profiles);
     profilesRef.current = profiles;
     const weeksRef = (0, import_react31.useRef)(weeks);
