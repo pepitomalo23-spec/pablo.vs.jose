@@ -18961,17 +18961,20 @@ B) Opci\xF3n B*` }),
         const dedupeItems = (rows) => {
           const map = /* @__PURE__ */ new Map();
           rows.forEach(({ text: raw, end }) => {
-            const text = (raw || "").trim();
-            if (!text) return;
+            const full = (raw || "").trim();
+            if (!full) return;
             const examDate = end ? new Date(end[0], end[1] - 1, end[2], 23, 59, 59) : null;
             const passed = !!examDate && now >= examDate;
-            const prev = map.get(text);
-            if (prev) {
-              prev.count += 1;
-              prev.seen = prev.seen || passed;
-            } else {
-              map.set(text, { text, count: 1, seen: passed });
-            }
+            const parts = full.split("+").map((p) => p.trim()).filter(Boolean);
+            parts.forEach((text) => {
+              const prev = map.get(text);
+              if (prev) {
+                prev.count += 1;
+                prev.seen = prev.seen || passed;
+              } else {
+                map.set(text, { text, count: 1, seen: passed });
+              }
+            });
           });
           return Array.from(map.values());
         };
