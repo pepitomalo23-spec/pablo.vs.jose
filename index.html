@@ -64,6 +64,18 @@
       @media (max-width: 767px) {
         input, textarea, select { font-size: 16px !important; }
       }
+      /* Temario: legislación al lado del temario específico en cualquier pantalla que no sea móvil */
+      @media (min-width: 768px) {
+        .syllabus-columns {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          align-items: start;
+        }
+        .syllabus-columns > * + * {
+          margin-top: 0 !important;
+        }
+      }
       button, a, [role="button"] {
         -webkit-tap-highlight-color: transparent;
       }
@@ -19056,7 +19068,7 @@ B) Opci\xF3n B*` }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { className: "text-xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: t("syllabusTitle") }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: t("syllabusSubtitle") })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 md:items-start", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 syllabus-columns", children: [
             renderGroup(specItems, t("specificLabel"), "text-[#E14E3C]", "#E14E3C"),
             renderGroup(legItems, t("legislationLabel"), "text-[#3457D6]", "#3457D6")
           ] })
