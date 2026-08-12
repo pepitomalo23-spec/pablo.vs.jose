@@ -14025,6 +14025,8 @@
 
   // src/components/Dashboard.tsx
   var import_jsx_runtime = __toESM(require_jsx_runtime());
+  var import_react_dash = __toESM(require_react());
+  var import_react_dom_portal_dash = __toESM(require_react_dom());
   var Dashboard = ({
     my,
     profiles,
@@ -14043,6 +14045,7 @@
     calcTimeRemaining,
     fmtScore
   }) => {
+    const [showRound1Info, setShowRound1Info] = import_react_dash.useState(false);
     const OTHER_UID_MAP_DASH = { pablomar: "jmar", jmar: "pablomar" };
     const otherUidDash = OTHER_UID_MAP_DASH[my.uid] || null;
     const revealedTests = (tests || []).filter((t2) => {
@@ -14240,14 +14243,100 @@
         bestDiffWeekNum = w.week;
       }
     });
+    const round1Info = (() => {
+      if (!schedule || schedule.length === 0) return null;
+      const toDate = (arr) => arr ? new Date(arr[0], arr[1] - 1, arr[2]) : null;
+      const withDates = schedule.map((s) => ({ start: toDate(s.start), end: toDate(s.end) })).filter((s) => s.start && s.end);
+      if (withDates.length === 0) return null;
+      const round1Start = withDates.reduce((min2, s) => s.start < min2 ? s.start : min2, withDates[0].start);
+      const round1End = withDates.reduce((max2, s) => s.end > max2 ? s.end : max2, withDates[0].end);
+      const countStudyExamDays = (from, to) => {
+        if (from > to) return 0;
+        let count = 0;
+        const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+        const endD = new Date(to.getFullYear(), to.getMonth(), to.getDate());
+        while (d <= endD) {
+          if (d.getDay() !== 0) count++;
+          d.setDate(d.getDate() + 1);
+        }
+        return count;
+      };
+      const now3 = /* @__PURE__ */ new Date();
+      const todayStart = new Date(now3.getFullYear(), now3.getMonth(), now3.getDate());
+      const finished = round1End < todayStart;
+      const daysRemaining = finished ? 0 : countStudyExamDays(todayStart, round1End);
+      const totalDuration = countStudyExamDays(round1Start, round1End);
+      return { round1Start, round1End, daysRemaining, totalDuration, finished };
+    })();
+    const round1Modal = showRound1Info && round1Info ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "div",
+      {
+        onClick: () => setShowRound1Info(false),
+        className: "fixed inset-0 z-[200] flex items-center justify-center p-5 backdrop-blur-sm opt-modal-fade",
+        style: { backgroundColor: "rgba(20,17,12,0.6)" },
+        children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "div",
+          {
+            onClick: (e) => e.stopPropagation(),
+            className: "w-full max-w-[360px] bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_8px_20px_rgba(26,23,18,0.07),0_28px_56px_-20px_rgba(26,23,18,0.20)]",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-center justify-between mb-3.5", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { className: "text-sm font-bold text-[#1A1712]", children: "1\xAA vuelta" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  "button",
+                  {
+                    onClick: () => setShowRound1Info(false),
+                    className: "p-1.5 -mr-1.5 text-[rgba(26,23,18,0.32)] hover:opacity-85",
+                    children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { size: 16 })
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5", children: "Duraci\xF3n total" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: [
+                    round1Info.totalDuration,
+                    " d\xEDas de estudio y examen \xB7 ",
+                    schedule.length,
+                    " semanas"
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5", children: round1Info.finished ? "Estado" : "Quedan" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: round1Info.finished ? "1\xAA vuelta terminada" : `${round1Info.daysRemaining} d\xEDas de estudio y examen` })
+                ] })
+              ] })
+            ]
+          }
+        )
+      }
+    ) : null;
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "opt-fade-in-up", children: [
+      round1Modal && (() => {
+        try {
+          return import_react_dom_portal_dash.createPortal(round1Modal, document.body);
+        } catch (e) {
+          return round1Modal;
+        }
+      })(),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 py-6", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", { className: "text-[1.65rem] sm:text-3xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: [
           "Hola, ",
           my.name ? my.name.split(" ")[0] : "Opositor",
           " \u{1F44B}"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) }),
+        round1Info && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            onClick: () => setShowRound1Info(true),
+            className: "mt-2.5 inline-flex items-center gap-1.5 bg-white text-[#1A1712] text-xs font-bold px-3 py-1.5 rounded-full border border-[rgba(30,26,18,0.08)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_3px_8px_rgba(26,23,18,0.1)] active:scale-97 transition-transform",
+            children: [
+              "\u23F3 ",
+              round1Info.finished ? "1\xAA vuelta terminada" : `Quedan ${round1Info.daysRemaining} d\xEDas \xB7 1\xAA vuelta`
+            ]
+          }
+        )
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
