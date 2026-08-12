@@ -18490,6 +18490,7 @@ B) Opci\xF3n B*` }),
     const [expandedLegName, setExpandedLegName] = (0, import_react7.useState)(null);
     const [legLineType, setLegLineType] = (0, import_react7.useState)("titulo");
     const [legLineText, setLegLineText] = (0, import_react7.useState)("");
+    const [legLineIndent, setLegLineIndent] = (0, import_react7.useState)(false);
     const [openLegItems, setOpenLegItems] = (0, import_react7.useState)({});
     if (studentPreview) {
       return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "min-h-screen bg-[#FDFBF8] px-4 sm:px-6 py-6 sm:py-8", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "max-w-2xl mx-auto", children: [
@@ -18544,7 +18545,7 @@ B) Opci\xF3n B*` }),
         return;
       }
       const current = (legislationDetails && legislationDetails[lawName]) || [];
-      const nextLine = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type: legLineType, text };
+      const nextLine = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type: legLineType, text, indent: legLineIndent };
       const nextItems = [...current, nextLine];
       onSaveLegislationDetails(lawName, nextItems);
       setLegLineText("");
@@ -18552,6 +18553,11 @@ B) Opci\xF3n B*` }),
     const handleRemoveLegLine = (lawName, lineId) => {
       const current = (legislationDetails && legislationDetails[lawName]) || [];
       const nextItems = current.filter((l) => l.id !== lineId);
+      onSaveLegislationDetails(lawName, nextItems);
+    };
+    const handleToggleLegLineIndent = (lawName, lineId) => {
+      const current = (legislationDetails && legislationDetails[lawName]) || [];
+      const nextItems = current.map((l) => l.id === lineId ? { ...l, indent: !l.indent } : l);
       onSaveLegislationDetails(lawName, nextItems);
     };
     const handleUpdatePassword = async () => {
@@ -19287,8 +19293,9 @@ B) Opci\xF3n B*` }),
                       "div",
                       {
                         className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5",
-                        style: { backgroundColor: item.seen ? "rgba(255,255,255,0.14)" : `${info.color}12` },
+                        style: { backgroundColor: item.seen ? "rgba(255,255,255,0.14)" : `${info.color}12`, marginLeft: line.indent ? "22px" : "0" },
                         children: [
+                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { style: { color: item.seen ? "#fff" : "#8C8579" }, children: "\u21B3" }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: item.seen ? "#fff" : info.color }, children: info.label }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug", style: { color: item.seen ? "#fff" : "#1A1712" }, children: line.text })
                         ]
@@ -19909,20 +19916,32 @@ Cancelar = mantener el examen guardado`) : true;
                     "div",
                     {
                       className: "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
-                      style: { backgroundColor: `${info.color}12`, border: `1px solid ${info.color}30` },
+                      style: { backgroundColor: `${info.color}12`, border: `1px solid ${info.color}30`, marginLeft: line.indent ? "22px" : "0" },
                       children: [
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 min-w-0", children: [
+                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[#8C8579] shrink-0", children: "\u21B3" }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: info.color }, children: info.label }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-sm font-semibold text-[#1A1712]", children: line.text })
                         ] }),
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-                          "button",
-                          {
-                            onClick: () => handleRemoveLegLine(expandedLegName, line.id),
-                            className: "shrink-0 text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#E14E3C]",
-                            children: "Quitar"
-                          }
-                        )
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "shrink-0 flex items-center gap-2", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "button",
+                            {
+                              onClick: () => handleToggleLegLineIndent(expandedLegName, line.id),
+                              title: "Meter/sacar sangr\xEDa",
+                              className: "text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#3457D6]",
+                              children: line.indent ? "\u21B0 Quitar sangr\xEDa" : "\u21B3 Sangrar"
+                            }
+                          ),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "button",
+                            {
+                              onClick: () => handleRemoveLegLine(expandedLegName, line.id),
+                              className: "text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#E14E3C]",
+                              children: "Quitar"
+                            }
+                          )
+                        ] })
                       ]
                     },
                     line.id
@@ -19941,6 +19960,18 @@ Cancelar = mantener el examen guardado`) : true;
                   },
                   lt2.key
                 )) }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                  "button",
+                  {
+                    onClick: () => setLegLineIndent(!legLineIndent),
+                    className: "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold border-none cursor-pointer transition-all",
+                    style: legLineIndent ? { backgroundColor: "#1A1712", color: "#fff" } : { backgroundColor: "#F1EDE3", color: "#8C8579" },
+                    children: [
+                      "\u21B3",
+                      " Meter para dentro (va debajo del anterior)"
+                    ]
+                  }
+                ),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-2", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                     "input",
@@ -19951,6 +19982,7 @@ Cancelar = mantener el examen guardado`) : true;
                         if (e.key === "Enter") handleAddLegLine(expandedLegName);
                       },
                       placeholder: legLineType === "titulo" ? "Ej: T\xEDtulo I. De los derechos y deberes fundamentales" : legLineType === "capitulo" ? "Ej: Cap\xEDtulo II. Derechos y libertades" : "Ej: Art\xEDculos 14 a 29",
+                      style: legLineIndent ? { marginLeft: "22px" } : void 0,
                       className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-3 px-4 font-semibold text-sm text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.35)] focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all"
                     }
                   ),
@@ -19962,6 +19994,10 @@ Cancelar = mantener el examen guardado`) : true;
                       children: "A\xF1adir"
                     }
                   )
+                ] }),
+                legLineText.trim() && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5", style: { backgroundColor: `${legLineTypeInfo(legLineType).color}12`, marginLeft: legLineIndent ? "22px" : "0" }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: legLineTypeInfo(legLineType).color }, children: legLineTypeInfo(legLineType).label }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug text-[#1A1712]", children: legLineText })
                 ] })
               ] })
             ] })
