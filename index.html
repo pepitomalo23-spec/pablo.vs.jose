@@ -817,6 +817,22 @@
          la diferencia entre "todo el mismo gap" y una composición con
          intención. */
       :where(.space-y-6, .space-y-5) > *:first-child { margin-bottom: 0.35rem; }
+
+      /* ---------- G. Inicio en 2 columnas en pantallas grandes ---------- */
+      @media (min-width: 1024px) {
+        .opt-home-wide { max-width: 920px !important; }
+        .opt-dash-cols {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+          gap: 20px;
+          align-items: start;
+        }
+        .opt-dash-cols > *:not(:last-child) {
+          margin-block-start: 0 !important;
+          margin-block-end: 0 !important;
+        }
+        .opt-dash-left { position: sticky; top: 24px; }
+      }
     </style>
   </head>
   <body>
@@ -14378,8 +14394,8 @@
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-5 lg:items-start", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lg:sticky lg:top-6", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5 opt-dash-cols", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "opt-dash-left", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
           "div",
           {
             className: "relative overflow-hidden rounded-3xl border border-[rgba(255,255,255,0.08)] shadow-2xl rank-card-premium",
@@ -31893,7 +31909,7 @@ Cancelar = mantener el examen guardado`) : true;
           },
           to.id
         )) }),
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] mx-auto min-h-screen bg-[#EAE6DC] relative pb-12 overflow-y-auto overflow-x-hidden", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] mx-auto min-h-screen bg-[#EAE6DC] relative pb-12 overflow-y-auto overflow-x-hidden", style: { paddingTop: "calc(1rem + env(safe-area-inset-top, 0px))" }, children: [
           /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
             motion2.div,
             {
@@ -32008,12 +32024,13 @@ Cancelar = mantener el examen guardado`) : true;
       /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
         "div",
         {
-          className: `w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] ${currentTab === "home" ? "lg:max-w-[920px]" : ""} mx-auto min-h-screen relative pb-24 overflow-y-auto overflow-x-hidden`,
+          className: `w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] ${currentTab === "home" ? "opt-home-wide" : ""} mx-auto min-h-screen relative pb-24 overflow-y-auto overflow-x-hidden`,
           style: {
             backgroundColor: "#EAE6DC",
             backgroundImage: "radial-gradient(rgba(26,23,18,0.045) 1px, transparent 1px), radial-gradient(circle at 12% 6%, rgba(225,78,60,0.09), transparent 42%), radial-gradient(circle at 92% 90%, rgba(52,87,214,0.08), transparent 42%), linear-gradient(165deg, #F1EDE1 0%, #EAE6DC 40%, #DED9C8 100%)",
             backgroundSize: "16px 16px, auto, auto, auto",
-            backgroundPosition: "0 0, 0 0, 0 0, 0 0"
+            backgroundPosition: "0 0, 0 0, 0 0, 0 0",
+            paddingTop: "calc(1rem + env(safe-area-inset-top, 0px))"
           },
           children: [
         /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
