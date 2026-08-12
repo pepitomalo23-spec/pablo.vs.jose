@@ -19293,11 +19293,11 @@ B) Opci\xF3n B*` }),
                       "div",
                       {
                         className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5",
-                        style: { backgroundColor: item.seen ? "rgba(255,255,255,0.14)" : `${info.color}12`, marginLeft: line.indent ? "22px" : "0" },
+                        style: { backgroundColor: `${info.color}12`, marginLeft: line.indent ? "22px" : "0" },
                         children: [
-                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { style: { color: item.seen ? "#fff" : "#8C8579" }, children: "\u21B3" }),
-                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: item.seen ? "#fff" : info.color }, children: info.label }),
-                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug", style: { color: item.seen ? "#fff" : "#1A1712" }, children: line.text })
+                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { style: { color: "#8C8579" }, children: "\u21B3" }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: info.color }, children: info.label }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug", style: { color: "#1A1712" }, children: line.text })
                         ]
                       },
                       line.id
