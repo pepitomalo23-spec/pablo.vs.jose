@@ -14297,6 +14297,8 @@
         totalDuration,
         finished,
         weeksTotal: schedule.length,
+        remainingMonths: remainingCalendar.months,
+        remainingDays: remainingCalendar.days,
         remainingLabel: fmtMonthsDays(remainingCalendar.months, remainingCalendar.days),
         totalLabel: fmtMonthsDays(totalCalendar.months, totalCalendar.days),
         startDateLabel: fmtFullDate(round1Start),
@@ -14543,7 +14545,10 @@
               children: [
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-9 h-9 rounded-full bg-[rgba(225,78,60,0.12)] flex items-center justify-center text-[#E14E3C] shrink-0 text-sm", children: "\u23F3" }),
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[9px] font-bold text-[#8C8579] tracking-wider uppercase truncate", children: "1\xAA vuelta" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-sm font-extrabold text-[#1A1712] leading-snug", children: round1Info.finished ? "Terminada" : round1Info.remainingLabel })
+                round1Info.finished ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-sm font-extrabold text-[#1A1712] leading-snug", children: "Terminada" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-baseline justify-center gap-1.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xl font-extrabold text-[#1A1712] leading-none", children: round1Info.remainingMonths > 0 ? round1Info.remainingMonths : round1Info.remainingDays }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-semibold text-[#E14E3C]", children: round1Info.remainingMonths > 0 ? round1Info.remainingMonths === 1 ? "mes" : "meses" : round1Info.remainingDays === 1 ? "d\xEDa" : "d\xEDas" })
+                ] })
               ]
             }
           )
