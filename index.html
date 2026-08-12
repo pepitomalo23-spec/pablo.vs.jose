@@ -14374,22 +14374,7 @@
           my.name ? my.name.split(" ")[0] : "Opositor",
           " \u{1F44B}"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-3.5", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) }),
-        round1Info && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-          "button",
-          {
-            onClick: () => setShowRound1Info(true),
-            className: "w-full bg-white rounded-3xl p-4 flex items-center gap-3.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)] cursor-pointer active:scale-99 transition-transform text-left",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-10 h-10 rounded-full bg-[rgba(225,78,60,0.12)] flex items-center justify-center text-[#E14E3C] shrink-0 text-base", children: "\u23F3" }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex-1 min-w-0", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-sm font-bold text-[#1A1712]", children: round1Info.finished ? "1\xAA vuelta terminada" : `Quedan ${round1Info.remainingLabel}` }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-semibold text-[#8C8579] mt-0.5", children: round1Info.finished ? "Toca para ver el detalle" : `${round1Info.daysRemaining} d\xEDas de estudio y examen \xB7 toca para el detalle` })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { size: 20, className: "text-[rgba(26,23,18,0.32)] shrink-0" })
-            ]
-          }
-        )
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
@@ -14534,29 +14519,39 @@
             ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-          "div",
-          {
-            onClick: () => onTabChange("exam"),
-            className: "bg-white rounded-3xl p-5.5 flex items-center justify-between border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)] cursor-pointer active:scale-99 transition-transform",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex gap-4 items-start", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-10 h-10 rounded-full bg-[#F1EDE3] flex items-center justify-center text-[#1A1712] shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { size: 20 }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[11px] font-bold text-[#8C8579] tracking-wider uppercase mb-1", children: t("nextExamLabel") }),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-sm font-bold text-[#1A1712]", children: [
-                    "Semana ",
-                    currentSchedule.week
-                  ] })
-                ] })
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-center ml-4 shrink-0", children: examDate ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-2xl font-extrabold text-[#1A1712] leading-none", children: examDate.getDate() }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[13px] font-semibold text-[#E14E3C] mt-1", children: MONTHS_SHORT[examDate.getMonth()] })
-              ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-bold text-[#8C8579]", children: "Por asignar" }) })
-            ]
-          }
-        ),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "grid grid-cols-2 gap-3", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+            "div",
+            {
+              onClick: () => onTabChange("exam"),
+              className: "bg-white rounded-2xl p-3.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)] cursor-pointer active:scale-99 transition-transform",
+              children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-center gap-2 mb-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-7 h-7 rounded-full bg-[#F1EDE3] flex items-center justify-center text-[#1A1712] shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Calendar, { size: 13 }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[9px] font-bold text-[#8C8579] tracking-wider uppercase truncate", children: t("nextExamLabel") })
+                ] }),
+                examDate ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-baseline gap-1.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xl font-extrabold text-[#1A1712] leading-none", children: examDate.getDate() }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-semibold text-[#E14E3C]", children: MONTHS_SHORT[examDate.getMonth()] })
+                ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-bold text-[#8C8579]", children: "Por asignar" })
+              ]
+            }
+          ),
+          round1Info && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+            "button",
+            {
+              onClick: () => setShowRound1Info(true),
+              className: "bg-white rounded-2xl p-3.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)] cursor-pointer active:scale-99 transition-transform text-left",
+              children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-center gap-2 mb-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-7 h-7 rounded-full bg-[rgba(225,78,60,0.12)] flex items-center justify-center text-[#E14E3C] shrink-0 text-xs", children: "\u23F3" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[9px] font-bold text-[#8C8579] tracking-wider uppercase truncate", children: "1\xAA vuelta" })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-sm font-extrabold text-[#1A1712] leading-snug", children: round1Info.finished ? "Terminada" : round1Info.remainingLabel })
+              ]
+            }
+          )
+        ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "bg-white rounded-3xl p-5.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-4", children: t("weekStudyTitle") }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
