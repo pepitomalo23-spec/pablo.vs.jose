@@ -14261,12 +14261,47 @@
         }
         return count;
       };
+      const monthsDaysBetween = (from, to) => {
+        if (from > to) return { months: 0, days: 0 };
+        let months = (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+        let days = to.getDate() - from.getDate();
+        if (days < 0) {
+          months -= 1;
+          const prevMonthLastDay = new Date(to.getFullYear(), to.getMonth(), 0).getDate();
+          days += prevMonthLastDay;
+        }
+        if (months < 0) {
+          months = 0;
+          days = 0;
+        }
+        return { months, days };
+      };
+      const fmtMonthsDays = (months, days) => {
+        const parts = [];
+        if (months > 0) parts.push(`${months} ${months === 1 ? "mes" : "meses"}`);
+        if (days > 0 || months === 0) parts.push(`${days} ${days === 1 ? "d\xEDa" : "d\xEDas"}`);
+        return parts.join(" y ");
+      };
+      const fmtFullDate = (d) => `${d.getDate()} de ${MONTHS_FULL[d.getMonth()].toLowerCase()} de ${d.getFullYear()}`;
       const now3 = /* @__PURE__ */ new Date();
       const todayStart = new Date(now3.getFullYear(), now3.getMonth(), now3.getDate());
       const finished = round1End < todayStart;
       const daysRemaining = finished ? 0 : countStudyExamDays(todayStart, round1End);
       const totalDuration = countStudyExamDays(round1Start, round1End);
-      return { round1Start, round1End, daysRemaining, totalDuration, finished };
+      const remainingCalendar = finished ? { months: 0, days: 0 } : monthsDaysBetween(todayStart, round1End);
+      const totalCalendar = monthsDaysBetween(round1Start, round1End);
+      return {
+        round1Start,
+        round1End,
+        daysRemaining,
+        totalDuration,
+        finished,
+        weeksTotal: schedule.length,
+        remainingLabel: fmtMonthsDays(remainingCalendar.months, remainingCalendar.days),
+        totalLabel: fmtMonthsDays(totalCalendar.months, totalCalendar.days),
+        startDateLabel: fmtFullDate(round1Start),
+        endDateLabel: fmtFullDate(round1End)
+      };
     })();
     const round1Modal = showRound1Info && round1Info ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
       "div",
@@ -14292,18 +14327,32 @@
                 )
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "space-y-3", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5", children: "Duraci\xF3n total" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: [
-                    round1Info.totalDuration,
-                    " d\xEDas de estudio y examen \xB7 ",
-                    schedule.length,
-                    " semanas"
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5", children: round1Info.finished ? "Estado" : "Tiempo restante" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-lg font-extrabold text-[#1A1712] leading-snug", children: round1Info.finished ? "1\xAA vuelta terminada" : round1Info.remainingLabel }),
+                  !round1Info.finished && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "text-xs font-semibold text-[#8C8579] mt-0.5", children: [
+                    round1Info.daysRemaining,
+                    " d\xEDas de estudio y examen"
                   ] })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-2xl", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1.5", children: round1Info.finished ? "Estado" : "Quedan" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: round1Info.finished ? "1\xAA vuelta terminada" : `${round1Info.daysRemaining} d\xEDas de estudio y examen` })
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(52,87,214,0.04)] border border-[rgba(52,87,214,0.08)] rounded-2xl", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#3457D6] uppercase tracking-widest mb-1.5", children: "Termina el" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug capitalize", children: round1Info.endDateLabel })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "p-4 bg-[rgba(30,26,18,0.03)] border border-[rgba(30,26,18,0.06)] rounded-2xl", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-[10px] font-black text-[#8C8579] uppercase tracking-widest mb-1.5", children: "Duraci\xF3n total de la 1\xAA vuelta" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "text-sm font-bold text-[#1A1712] leading-snug", children: [
+                    round1Info.totalLabel,
+                    " (",
+                    round1Info.totalDuration,
+                    " d\xEDas de estudio y examen \xB7 ",
+                    round1Info.weeksTotal,
+                    " semanas)"
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { className: "text-xs font-semibold text-[#8C8579] mt-1 capitalize", children: [
+                    "Desde el ",
+                    round1Info.startDateLabel
+                  ] })
                 ] })
               ] })
             ]
@@ -14325,15 +14374,19 @@
           my.name ? my.name.split(" ")[0] : "Opositor",
           " \u{1F44B}"
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-3.5", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) }),
         round1Info && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
           "button",
           {
             onClick: () => setShowRound1Info(true),
-            className: "mt-2.5 inline-flex items-center gap-1.5 bg-white text-[#1A1712] text-xs font-bold px-3 py-1.5 rounded-full border border-[rgba(30,26,18,0.08)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_3px_8px_rgba(26,23,18,0.1)] active:scale-97 transition-transform",
+            className: "w-full bg-white rounded-3xl p-4 flex items-center gap-3.5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_12px_24px_-14px_rgba(26,23,18,0.12)] cursor-pointer active:scale-99 transition-transform text-left",
             children: [
-              "\u23F3 ",
-              round1Info.finished ? "1\xAA vuelta terminada" : `Quedan ${round1Info.daysRemaining} d\xEDas \xB7 1\xAA vuelta`
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "w-10 h-10 rounded-full bg-[rgba(225,78,60,0.12)] flex items-center justify-center text-[#E14E3C] shrink-0 text-base", children: "\u23F3" }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex-1 min-w-0", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-sm font-bold text-[#1A1712]", children: round1Info.finished ? "1\xAA vuelta terminada" : `Quedan ${round1Info.remainingLabel}` }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-semibold text-[#8C8579] mt-0.5", children: round1Info.finished ? "Toca para ver el detalle" : `${round1Info.daysRemaining} d\xEDas de estudio y examen \xB7 toca para el detalle` })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { size: 20, className: "text-[rgba(26,23,18,0.32)] shrink-0" })
             ]
           }
         )
