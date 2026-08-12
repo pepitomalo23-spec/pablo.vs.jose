@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/check-law-updates",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

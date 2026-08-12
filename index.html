@@ -18277,6 +18277,11 @@ B) Opci\xF3n B*` }),
     onSaveCards,
     onReviewNormativaAnswer,
     onFinalizeReview,
+    watchedLaws,
+    onAddWatchedLaw,
+    onRemoveWatchedLaw,
+    lawUpdateNotices,
+    onMarkLawNoticeSeen,
     forceAdminView = false
   }) => {
     const [activeView, setActiveView] = (0, import_react7.useState)(
@@ -18317,6 +18322,11 @@ B) Opci\xF3n B*` }),
     const [addingWeekOpen, setAddingWeekOpen] = (0, import_react7.useState)(false);
     const [expandedWeekId, setExpandedWeekId] = (0, import_react7.useState)(null);
     const [expandedActionType, setExpandedActionType] = (0, import_react7.useState)(null);
+    const [lawPanelOpen, setLawPanelOpen] = (0, import_react7.useState)(false);
+    const [lawSearchQuery, setLawSearchQuery] = (0, import_react7.useState)("");
+    const [lawSearchResults, setLawSearchResults] = (0, import_react7.useState)([]);
+    const [lawSearchLoading, setLawSearchLoading] = (0, import_react7.useState)(false);
+    const [lawSearchError, setLawSearchError] = (0, import_react7.useState)("");
     const [weekEditSpec, setWeekEditSpec] = (0, import_react7.useState)("");
     const [weekEditLeg, setWeekEditLeg] = (0, import_react7.useState)("");
     const [weekEditStart, setWeekEditStart] = (0, import_react7.useState)("");
@@ -18397,6 +18407,28 @@ B) Opci\xF3n B*` }),
       } else {
         setNotifStatus(res.error || "No se han podido activar.");
       }
+    };
+    const handleSearchLaw = async () => {
+      const q = lawSearchQuery.trim();
+      if (!q) return;
+      setLawSearchLoading(true);
+      setLawSearchError("");
+      setLawSearchResults([]);
+      try {
+        const res = await fetch(`/api/search-law?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          setLawSearchError((data && data.error) || "No se ha podido buscar en el BOE.");
+        } else {
+          setLawSearchResults(data.results || []);
+          if ((data.results || []).length === 0) {
+            setLawSearchError("No se ha encontrado ninguna ley con ese texto. Prueba con menos palabras.");
+          }
+        }
+      } catch (e) {
+        setLawSearchError("No se ha podido conectar con el BOE. Comprueba tu conexi\xF3n.");
+      }
+      setLawSearchLoading(false);
     };
     const handleDeleteAnkiTopic = async (deckId) => {
       const target = (ankiDecks || []).find((d) => d.id === deckId);
@@ -19064,6 +19096,46 @@ B) Opci\xF3n B*` }),
           }) })
         ] });
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-5", children: [
+          (() => {
+            const myNotices = (lawUpdateNotices || []).filter((n) => !(n.seenBy || []).includes(my.uid));
+            if (myNotices.length === 0) return null;
+            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[rgba(52,87,214,0.08)] border border-[rgba(52,87,214,0.18)] rounded-3xl p-4 space-y-2.5", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-xs font-black text-[#3457D6] uppercase tracking-widest flex items-center gap-1.5", children: [
+                "\u{1F4DC}",
+                myNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${myNotices.length} leyes de tu temario han cambiado`
+              ] }),
+              myNotices.map((n) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                "div",
+                {
+                  className: "flex items-start justify-between gap-3 bg-white rounded-2xl p-3.5 border border-[rgba(30,26,18,0.06)]",
+                  children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-bold text-[#1A1712] leading-snug", children: n.titulo }),
+                      n.url && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                        "a",
+                        {
+                          href: n.url,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          className: "text-[11px] font-bold text-[#3457D6] hover:underline",
+                          children: "Ver el texto consolidado \u2192"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                      "button",
+                      {
+                        onClick: () => onMarkLawNoticeSeen(n.id, my.uid),
+                        className: "shrink-0 text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#1A1712]",
+                        children: "Marcar como visto"
+                      }
+                    )
+                  ]
+                },
+                n.id
+              ))
+            ] });
+          })(),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mb-5.5", children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { className: "text-xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: t("syllabusTitle") }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: t("syllabusSubtitle") })
@@ -20400,7 +20472,111 @@ Cancelar = mantener el examen guardado`) : true;
                 children: "Cerrar sesi\xF3n"
               }
             ) })
-          ] })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+              "div",
+              {
+                onClick: () => setLawPanelOpen(!lawPanelOpen),
+                className: "flex items-center justify-between cursor-pointer",
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { className: "text-base font-bold text-[#1A1712]", children: "\u{1F4DC} Vigilancia de leyes (BOE)" }),
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] font-medium mt-0.5", children: "Avisa autom\xE1ticamente cuando cambie una ley que est\xE9s vigilando." })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                    ChevronRight,
+                    {
+                      size: 18,
+                      className: `text-[rgba(26,23,18,0.32)] transition-transform shrink-0 ml-2 ${lawPanelOpen ? "rotate-90" : ""}`
+                    }
+                  )
+                ]
+              }
+            ),
+            lawPanelOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mt-4 space-y-4", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-2", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "input",
+                  {
+                    value: lawSearchQuery,
+                    onChange: (e) => setLawSearchQuery(e.target.value),
+                    onKeyDown: (e) => {
+                      if (e.key === "Enter") handleSearchLaw();
+                    },
+                    className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-3 px-3.5 font-medium text-sm text-[#1A1712] outline-none focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all",
+                    type: "text",
+                    placeholder: "Ej: Ley 31/1995 de Prevenci\xF3n de Riesgos Laborales"
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "button",
+                  {
+                    onClick: handleSearchLaw,
+                    disabled: lawSearchLoading || !lawSearchQuery.trim(),
+                    className: "shrink-0 bg-[#1A1712] text-white border-none rounded-2xl px-4 font-bold text-xs cursor-pointer hover:brightness-95 disabled:opacity-50 transition-all",
+                    children: lawSearchLoading ? "Buscando..." : "Buscar"
+                  }
+                )
+              ] }),
+              lawSearchError && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs font-bold text-[#E14E3C]", children: lawSearchError }),
+              lawSearchResults.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: lawSearchResults.map((r) => {
+                const alreadyWatched = (watchedLaws || []).some((l) => l.id === r.id);
+                return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                  "div",
+                  {
+                    className: "p-3.5 rounded-2xl border border-[rgba(30,26,18,0.08)] bg-[#FAF8F5] flex items-start justify-between gap-3",
+                    children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-bold text-[#1A1712] leading-snug", children: r.titulo }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-mono text-[#8C8579] mt-1", children: [
+                          r.id,
+                          r.rango ? ` \xB7 ${r.rango}` : ""
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                        "button",
+                        {
+                          onClick: () => {
+                            onAddWatchedLaw(r);
+                            showToast("Ley a\xF1adida", `Ahora vigilamos: ${r.titulo}`);
+                          },
+                          disabled: alreadyWatched,
+                          className: `shrink-0 rounded-full px-3.5 py-2 text-[11px] font-extrabold cursor-pointer border-none transition-all disabled:opacity-50 disabled:cursor-default ${alreadyWatched ? "bg-[rgba(18,161,107,0.12)] text-[#12A16B]" : "bg-[#3457D6] text-white hover:brightness-95"}`,
+                          children: alreadyWatched ? "\u2713 Vigilada" : "Vigilar"
+                        }
+                      )
+                    ]
+                  },
+                  r.id
+                );
+              }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "pt-3 border-t border-[rgba(30,26,18,0.08)]", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-extrabold text-[#1A1712] uppercase tracking-wider mb-2.5", children: "Leyes vigiladas actualmente" }),
+                (!watchedLaws || watchedLaws.length === 0) ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "Todav\xEDa no vigilas ninguna ley. Bu\xEDscala arriba y pulsa \"Vigilar\"." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2", children: watchedLaws.map((l) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                  "div",
+                  {
+                    className: "p-3.5 rounded-2xl border border-[rgba(30,26,18,0.08)] flex items-start justify-between gap-3",
+                    children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-bold text-[#1A1712] leading-snug min-w-0", children: l.titulo }),
+                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                        "button",
+                        {
+                          onClick: () => {
+                            if (!confirm(`\xBFDejar de vigilar "${l.titulo}"?`)) return;
+                            onRemoveWatchedLaw(l.id);
+                          },
+                          className: "shrink-0 text-[11px] font-extrabold text-[#E14E3C] bg-transparent border-none cursor-pointer hover:underline",
+                          children: "Quitar"
+                        }
+                      )
+                    ]
+                  },
+                  l.id
+                )) })
+              ] })
+            ] })
+          ] }),
         ] });
       }
       const roleLabel = my.role === "admin" ? t("roleLabelAdmin") : my.pid === "a" ? t("roleLabelA") : t("roleLabelB");
@@ -29448,6 +29624,8 @@ Cancelar = mantener el examen guardado`) : true;
     const [content, setContent] = (0, import_react31.useState)({});
     const [schedule, setSchedule] = (0, import_react31.useState)([]);
     const [normativas, setNormativas] = (0, import_react31.useState)([]);
+    const [watchedLaws, setWatchedLaws] = (0, import_react31.useState)([]);
+    const [lawUpdateNotices, setLawUpdateNotices] = (0, import_react31.useState)([]);
     const [ankiDecks, setAnkiDecks] = (0, import_react31.useState)([]);
     const [ankiCards, setAnkiCards] = (0, import_react31.useState)([]);
     const [ankiProgress, setAnkiProgress] = (0, import_react31.useState)({});
@@ -29461,6 +29639,8 @@ Cancelar = mantener el examen guardado`) : true;
     testsRef.current = tests;
     const scheduleRef = (0, import_react31.useRef)(schedule);
     scheduleRef.current = schedule;
+    const watchedLawsRef = (0, import_react31.useRef)(watchedLaws);
+    watchedLawsRef.current = watchedLaws;
     const ankiDecksRef = (0, import_react31.useRef)([]);
     ankiDecksRef.current = ankiDecks;
     const ankiCardsRef = (0, import_react31.useRef)([]);
@@ -29567,6 +29747,8 @@ Cancelar = mantener el examen guardado`) : true;
       setContent(data.content || {});
       setSchedule(data.schedule || []);
       setNormativas(data.normativas || []);
+      setWatchedLaws(data.watchedLaws || []);
+      setLawUpdateNotices(data.lawUpdateNotices || []);
       setAnkiDecks(resolveAnkiDecksForLoad(data.ankiDecks));
       setAnkiCards(data.ankiCards || []);
       setAnkiProgress(data.ankiProgress || {});
@@ -29737,6 +29919,9 @@ Cancelar = mantener el examen guardado`) : true;
       scheduleRef.current = d.schedule || [];
       setSchedule(d.schedule || []);
       setNormativas(d.normativas || []);
+      watchedLawsRef.current = d.watchedLaws || [];
+      setWatchedLaws(d.watchedLaws || []);
+      setLawUpdateNotices(d.lawUpdateNotices || []);
       ankiDecksRef.current = resolveAnkiDecksForLoad(d.ankiDecks);
       setAnkiDecks(ankiDecksRef.current);
       ankiCardsRef.current = d.ankiCards || [];
@@ -30734,6 +30919,69 @@ Cancelar = mantener el examen guardado`) : true;
         saveLocalDB(d);
       }
     };
+    const handleAddWatchedLaw = async (law) => {
+      const entry = { id: law.id, titulo: law.titulo, url: law.url || null, lastUpdate: law.fechaActualizacion || null };
+      const already = watchedLawsRef.current.some((l) => l.id === entry.id);
+      const nextWatched = already ? watchedLawsRef.current : [...watchedLawsRef.current, entry];
+      watchedLawsRef.current = nextWatched;
+      setWatchedLaws(nextWatched);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.watchedLaws = nextWatched;
+        saveLocalDB(d);
+        return;
+      }
+      try {
+        await optWriteFields({ watchedLaws: nextWatched });
+      } catch (e) {
+        console.warn("Backend connection failed, adding watched law locally", e);
+        notifyWriteFailure(e);
+        setIsOfflineMode(true);
+        localStorage.setItem("opt_is_offline_mode", "true");
+        const d = loadLocalDB();
+        d.watchedLaws = nextWatched;
+        saveLocalDB(d);
+      }
+    };
+    const handleRemoveWatchedLaw = async (lawId) => {
+      const nextWatched = watchedLawsRef.current.filter((l) => l.id !== lawId);
+      watchedLawsRef.current = nextWatched;
+      setWatchedLaws(nextWatched);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.watchedLaws = nextWatched;
+        saveLocalDB(d);
+        return;
+      }
+      try {
+        await optWriteFields({ watchedLaws: nextWatched });
+      } catch (e) {
+        console.warn("Backend connection failed, removing watched law locally", e);
+        notifyWriteFailure(e);
+        setIsOfflineMode(true);
+        localStorage.setItem("opt_is_offline_mode", "true");
+        const d = loadLocalDB();
+        d.watchedLaws = nextWatched;
+        saveLocalDB(d);
+      }
+    };
+    const handleMarkLawNoticeSeen = async (noticeId, uid) => {
+      const nextNotices = (lawUpdateNotices || []).map(
+        (n) => n.id === noticeId ? { ...n, seenBy: [...n.seenBy || [], uid] } : n
+      );
+      setLawUpdateNotices(nextNotices);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.lawUpdateNotices = nextNotices;
+        saveLocalDB(d);
+        return;
+      }
+      try {
+        await optWriteFields({ lawUpdateNotices: nextNotices });
+      } catch (e) {
+        console.warn("Backend connection failed, marking law notice as seen locally", e);
+      }
+    };
     const handleAddWeek = async (num, spec, leg, start, end) => {
       const nextSched = [...scheduleRef.current, { week: num, spec, leg, start, end }];
       scheduleRef.current = nextSched;
@@ -31288,6 +31536,11 @@ Cancelar = mantener el examen guardado`) : true;
                   onAdminSetPassword: handleAdminSetPassword,
                   onReviewNormativaAnswer: handleReviewNormativaAnswer,
                   onFinalizeReview: handleFinalizeReview,
+                  watchedLaws,
+                  onAddWatchedLaw: handleAddWatchedLaw,
+                  onRemoveWatchedLaw: handleRemoveWatchedLaw,
+                  lawUpdateNotices,
+                  onMarkLawNoticeSeen: handleMarkLawNoticeSeen,
                   forceAdminView: true
                 }
               ) })
@@ -31470,7 +31723,12 @@ Cancelar = mantener el examen guardado`) : true;
                   onUpsertWeek: handleSaveWeekResult,
                   onAdminSetPassword: handleAdminSetPassword,
                   onReviewNormativaAnswer: handleReviewNormativaAnswer,
-                  onFinalizeReview: handleFinalizeReview
+                  onFinalizeReview: handleFinalizeReview,
+                  watchedLaws,
+                  onAddWatchedLaw: handleAddWatchedLaw,
+                  onRemoveWatchedLaw: handleRemoveWatchedLaw,
+                  lawUpdateNotices,
+                  onMarkLawNoticeSeen: handleMarkLawNoticeSeen
                 }
               ) })
             ]
