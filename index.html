@@ -14378,8 +14378,8 @@
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: tFmt("userGreetingSubtitle", { week: currentWeekNum }) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 pb-8 space-y-3.5 lg:space-y-0 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-5 lg:items-start", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lg:sticky lg:top-6", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
           "div",
           {
             className: "relative overflow-hidden rounded-3xl border border-[rgba(255,255,255,0.08)] shadow-2xl rank-card-premium",
@@ -14520,7 +14520,8 @@
               ] })
             ]
           }
-        ),
+        ) }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "space-y-3.5", children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "grid grid-cols-2 gap-3", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
             "div",
@@ -14602,6 +14603,7 @@
             ]
           }
         )
+        ] })
       ] })
     ] });
   };
@@ -31892,9 +31894,6 @@ Cancelar = mantener el examen guardado`) : true;
           to.id
         )) }),
         /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] mx-auto min-h-screen bg-[#EAE6DC] relative pb-12 overflow-y-auto overflow-x-hidden", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "sticky top-0 z-40 bg-[rgba(231,226,210,0.75)] backdrop-blur-md flex flex-col items-center px-5 sm:px-7 md:px-9 lg:px-11 pb-3 border-none", style: { paddingTop: "calc(1.25rem + env(safe-area-inset-top, 0px))" }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "font-extrabold text-lg tracking-tight text-[#1A1712]", children: t("appName") })
-          ] }),
           /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
             motion2.div,
             {
@@ -32009,7 +32008,7 @@ Cancelar = mantener el examen guardado`) : true;
       /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
         "div",
         {
-          className: "w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] mx-auto min-h-screen relative pb-24 overflow-y-auto overflow-x-hidden",
+          className: `w-full max-w-[440px] sm:max-w-[600px] md:max-w-[680px] ${currentTab === "home" ? "lg:max-w-[920px]" : ""} mx-auto min-h-screen relative pb-24 overflow-y-auto overflow-x-hidden`,
           style: {
             backgroundColor: "#EAE6DC",
             backgroundImage: "radial-gradient(rgba(26,23,18,0.045) 1px, transparent 1px), radial-gradient(circle at 12% 6%, rgba(225,78,60,0.09), transparent 42%), radial-gradient(circle at 92% 90%, rgba(52,87,214,0.08), transparent 42%), linear-gradient(165deg, #F1EDE1 0%, #EAE6DC 40%, #DED9C8 100%)",
@@ -32017,7 +32016,6 @@ Cancelar = mantener el examen guardado`) : true;
             backgroundPosition: "0 0, 0 0, 0 0, 0 0"
           },
           children: [
-        !examActive && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "sticky top-0 z-40 bg-[rgba(231,226,210,0.75)] backdrop-blur-md flex justify-center items-center px-5 sm:px-7 md:px-9 lg:px-11 pb-3.5 border-none", style: { paddingTop: "calc(1.25rem + env(safe-area-inset-top, 0px))" }, children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "font-extrabold text-lg tracking-tight text-[#1A1712]", children: t("appName") }) }),
         /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(AnimatePresence, { mode: "wait", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
           motion2.div,
           {
