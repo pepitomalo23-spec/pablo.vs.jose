@@ -14051,6 +14051,16 @@
   var import_jsx_runtime = __toESM(require_jsx_runtime());
   var import_react_dash = __toESM(require_react());
   var import_react_dom_portal_dash = __toESM(require_react_dom());
+  function parseBoeDate(s) {
+    if (!s) return null;
+    const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/.exec(s);
+    if (m) {
+      const [, y, mo, d, h, mi, se] = m;
+      return new Date(Date.UTC(+y, +mo - 1, +d, +h, +mi, +se));
+    }
+    const d2 = new Date(s);
+    return isNaN(d2.getTime()) ? null : d2;
+  }
   var Dashboard = ({
     my,
     profiles,
@@ -14067,9 +14077,82 @@
     currentSchedule,
     nextSchedule,
     calcTimeRemaining,
-    fmtScore
+    fmtScore,
+    lawUpdateNotices,
+    onMarkLawNoticePopupSeen
   }) => {
     const [showRound1Info, setShowRound1Info] = import_react_dash.useState(false);
+    const LAW_NOTICE_WINDOW_DAYS = 7;
+    const recentLawNotices = (lawUpdateNotices || []).filter((n) => {
+      const d = parseBoeDate(n.fecha);
+      if (!d) return false;
+      const days = (Date.now() - d.getTime()) / (1e3 * 60 * 60 * 24);
+      return days >= 0 && days <= LAW_NOTICE_WINDOW_DAYS;
+    });
+    const unseenPopupLawNotices = recentLawNotices.filter((n) => !(n.popupSeenBy || []).includes(my.uid));
+    const [lawPopupNotices, setLawPopupNotices] = import_react_dash.useState([]);
+    const [lawDetailOpen, setLawDetailOpen] = import_react_dash.useState(false);
+    const lawPopupShownRef = import_react_dash.useRef(false);
+    import_react_dash.useEffect(() => {
+      if (lawPopupShownRef.current) return;
+      if (unseenPopupLawNotices.length === 0) return;
+      lawPopupShownRef.current = true;
+      setLawPopupNotices(unseenPopupLawNotices);
+    }, [unseenPopupLawNotices.length]);
+    const closeLawPopup = () => {
+      if (lawPopupNotices.length > 0 && onMarkLawNoticePopupSeen) {
+        onMarkLawNoticePopupSeen(lawPopupNotices.map((n) => n.id), my.uid);
+      }
+      setLawPopupNotices([]);
+    };
+    const lawNoticeModal = (title, notices, onClose) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      "div",
+      {
+        onClick: onClose,
+        style: { position: "fixed", inset: 0, zIndex: 200, background: "rgba(26,23,18,0.55)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" },
+        children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "div",
+          {
+            onClick: (e) => e.stopPropagation(),
+            className: "bg-white rounded-3xl p-6 max-w-[420px] w-full shadow-2xl space-y-4",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "text-sm font-black text-[#3457D6] uppercase tracking-widest flex items-center gap-1.5", children: [
+                "\u{1F4DC}",
+                title
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "space-y-2.5 max-h-[45vh] overflow-y-auto pr-1", children: notices.map((n) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+                "div",
+                {
+                  className: "bg-[#FAF8F5] rounded-2xl p-3.5 border border-[rgba(30,26,18,0.06)]",
+                  children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "text-xs font-bold text-[#1A1712] leading-snug", children: n.titulo }),
+                    n.url && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                      "a",
+                      {
+                        href: n.url,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "text-[11px] font-bold text-[#3457D6] hover:underline",
+                        children: "Ver el texto consolidado \u2192"
+                      }
+                    )
+                  ]
+                },
+                n.id
+              )) }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                "button",
+                {
+                  onClick: onClose,
+                  className: "w-full bg-[#1A1712] text-white border-none rounded-full py-3 font-bold text-sm cursor-pointer hover:brightness-95 transition-all",
+                  children: "Entendido"
+                }
+              )
+            ]
+          }
+        )
+      }
+    );
     const OTHER_UID_MAP_DASH = { pablomar: "jmar", jmar: "pablomar" };
     const otherUidDash = OTHER_UID_MAP_DASH[my.uid] || null;
     const revealedTests = (tests || []).filter((t2) => {
@@ -14099,7 +14182,32 @@
     ];
     if (my.role === "admin") {
       return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "opt-fade-in-up", children: [
+        lawPopupNotices.length > 0 && (() => {
+          try {
+            return import_react_dom_portal_dash.createPortal(lawNoticeModal(lawPopupNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${lawPopupNotices.length} leyes de tu temario han cambiado`, lawPopupNotices, closeLawPopup), document.body);
+          } catch (e) {
+            return lawNoticeModal(lawPopupNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${lawPopupNotices.length} leyes de tu temario han cambiado`, lawPopupNotices, closeLawPopup);
+          }
+        })(),
+        lawDetailOpen && (() => {
+          try {
+            return import_react_dom_portal_dash.createPortal(lawNoticeModal("Leyes actualizadas esta semana", recentLawNotices, () => setLawDetailOpen(false)), document.body);
+          } catch (e) {
+            return lawNoticeModal("Leyes actualizadas esta semana", recentLawNotices, () => setLawDetailOpen(false));
+          }
+        })(),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 py-6", children: [
+          recentLawNotices.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+            "button",
+            {
+              onClick: () => setLawDetailOpen(true),
+              className: "mb-2.5 inline-flex items-center gap-1.5 bg-[#3457D6] text-white border-none rounded-full pl-2.5 pr-3.5 py-1.5 text-[11px] font-extrabold cursor-pointer hover:brightness-95 transition-all",
+              children: [
+                "\u{1F4DC}",
+                recentLawNotices.length === 1 ? "1 ley actualizada" : `${recentLawNotices.length} leyes actualizadas`
+              ]
+            }
+          ),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", { className: "text-[1.65rem] sm:text-3xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: [
             "Hola, ",
             my.name,
@@ -14394,7 +14502,32 @@
           return round1Modal;
         }
       })(),
+      lawPopupNotices.length > 0 && (() => {
+        try {
+          return import_react_dom_portal_dash.createPortal(lawNoticeModal(lawPopupNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${lawPopupNotices.length} leyes de tu temario han cambiado`, lawPopupNotices, closeLawPopup), document.body);
+        } catch (e) {
+          return lawNoticeModal(lawPopupNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${lawPopupNotices.length} leyes de tu temario han cambiado`, lawPopupNotices, closeLawPopup);
+        }
+      })(),
+      lawDetailOpen && (() => {
+        try {
+          return import_react_dom_portal_dash.createPortal(lawNoticeModal("Leyes actualizadas esta semana", recentLawNotices, () => setLawDetailOpen(false)), document.body);
+        } catch (e) {
+          return lawNoticeModal("Leyes actualizadas esta semana", recentLawNotices, () => setLawDetailOpen(false));
+        }
+      })(),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 py-6", children: [
+        recentLawNotices.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            onClick: () => setLawDetailOpen(true),
+            className: "mb-2.5 inline-flex items-center gap-1.5 bg-[#3457D6] text-white border-none rounded-full pl-2.5 pr-3.5 py-1.5 text-[11px] font-extrabold cursor-pointer hover:brightness-95 transition-all",
+            children: [
+              "\u{1F4DC}",
+              recentLawNotices.length === 1 ? "1 ley actualizada" : `${recentLawNotices.length} leyes actualizadas`
+            ]
+          }
+        ),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h1", { className: "text-[1.65rem] sm:text-3xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: [
           "Hola, ",
           my.name ? my.name.split(" ")[0] : "Opositor",
@@ -19337,46 +19470,6 @@ B) Opci\xF3n B*` }),
           ] });
         };
         return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-5", children: [
-          (() => {
-            const myNotices = (lawUpdateNotices || []).filter((n) => !(n.seenBy || []).includes(my.uid));
-            if (myNotices.length === 0) return null;
-            return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[rgba(52,87,214,0.08)] border border-[rgba(52,87,214,0.18)] rounded-3xl p-4 space-y-2.5", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-xs font-black text-[#3457D6] uppercase tracking-widest flex items-center gap-1.5", children: [
-                "\u{1F4DC}",
-                myNotices.length === 1 ? "Una ley de tu temario ha cambiado" : `${myNotices.length} leyes de tu temario han cambiado`
-              ] }),
-              myNotices.map((n) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
-                "div",
-                {
-                  className: "flex items-start justify-between gap-3 bg-white rounded-2xl p-3.5 border border-[rgba(30,26,18,0.06)]",
-                  children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-bold text-[#1A1712] leading-snug", children: n.titulo }),
-                      n.url && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-                        "a",
-                        {
-                          href: n.url,
-                          target: "_blank",
-                          rel: "noopener noreferrer",
-                          className: "text-[11px] font-bold text-[#3457D6] hover:underline",
-                          children: "Ver el texto consolidado \u2192"
-                        }
-                      )
-                    ] }),
-                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-                      "button",
-                      {
-                        onClick: () => onMarkLawNoticeSeen(n.id, my.uid),
-                        className: "shrink-0 text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#1A1712]",
-                        children: "Marcar como visto"
-                      }
-                    )
-                  ]
-                },
-                n.id
-              ))
-            ] });
-          })(),
           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "mb-5.5", children: [
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h2", { className: "text-xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: t("syllabusTitle") }),
             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-sm font-medium text-[#8C8579]", children: t("syllabusSubtitle") })
@@ -31389,6 +31482,24 @@ Cancelar = mantener el examen guardado`) : true;
         console.warn("Backend connection failed, marking law notice as seen locally", e);
       }
     };
+    const handleMarkLawNoticePopupSeen = async (noticeIds, uid) => {
+      const idSet = new Set(noticeIds);
+      const nextNotices = (lawUpdateNotices || []).map(
+        (n) => idSet.has(n.id) ? { ...n, popupSeenBy: [...n.popupSeenBy || [], uid] } : n
+      );
+      setLawUpdateNotices(nextNotices);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.lawUpdateNotices = nextNotices;
+        saveLocalDB(d);
+        return;
+      }
+      try {
+        await optWriteFields({ lawUpdateNotices: nextNotices });
+      } catch (e) {
+        console.warn("Backend connection failed, marking law notice popup as seen locally", e);
+      }
+    };
     const handleSaveLegislationDetails = async (lawName, items) => {
       const nextDetails = { ...(legislationDetailsRef.current || {}), [lawName]: items };
       legislationDetailsRef.current = nextDetails;
@@ -32068,7 +32179,9 @@ Cancelar = mantener el examen guardado`) : true;
                   nextSchedule,
                   calcTimeRemaining,
                   fmtScore,
-                  fireConfetti
+                  fireConfetti,
+                  lawUpdateNotices,
+                  onMarkLawNoticePopupSeen: handleMarkLawNoticePopupSeen
                 }
               ),
               currentTab === "anki" && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "px-5 sm:px-7 md:px-9 lg:px-11 py-2", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
