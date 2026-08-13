@@ -832,11 +832,13 @@
           margin-block-end: 0 !important;
         }
         .opt-dash-left { height: 100%; }
-        .opt-dash-left > * {
+        .opt-dash-left > * { height: 100%; }
+        .opt-dash-card-inner {
           height: 100%;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-between;
+          gap: 18px;
         }
       }
     </style>
@@ -14407,7 +14409,7 @@
             className: "relative overflow-hidden rounded-3xl border border-[rgba(255,255,255,0.08)] shadow-2xl rank-card-premium",
             style: { background: "radial-gradient(circle at 50% -8%, rgba(255,255,255,0.05), transparent 55%), radial-gradient(circle at 50% 0%, #23242B 0%, #16171B 74%)" },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "relative", style: { padding: "clamp(14px, 4vw, 18px) clamp(12px, 4vw, 18px) clamp(14px, 4vw, 16px)" }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "relative opt-dash-card-inner", style: { padding: "clamp(14px, 4vw, 18px) clamp(12px, 4vw, 18px) clamp(14px, 4vw, 16px)" }, children: [
                 /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "opt-fade-in-up flex flex-col items-center text-center", style: { marginBottom: "14px" }, children: [
                   /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "flex items-center justify-center", style: { gap: "6px" }, children: [
                     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { viewBox: "0 0 24 24", width: "13", height: "13", fill: "none", stroke: "#D9AE4F", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", children: [
