@@ -30393,21 +30393,43 @@ Cancelar = mantener el examen guardado`) : true;
     const [guestInviteCode, setGuestInviteCode] = (0, import_react31.useState)(() => {
       try {
         const params = new URLSearchParams(window.location.search);
-        return params.get("invite") || null;
+        const fromUrl = params.get("invite");
+        if (fromUrl) return fromUrl;
+        return localStorage.getItem("opt_guest_invite_code") || null;
       } catch (e) {
         return null;
       }
     });
-    const [guestName, setGuestName] = (0, import_react31.useState)("");
+    const [guestName, setGuestName] = (0, import_react31.useState)(() => {
+      try {
+        return localStorage.getItem("opt_guest_name") || "";
+      } catch (e) {
+        return "";
+      }
+    });
     const [guestNameInput, setGuestNameInput] = (0, import_react31.useState)("");
     const [guestGateLoading, setGuestGateLoading] = (0, import_react31.useState)(true);
     const [showInviteCodeForm, setShowInviteCodeForm] = (0, import_react31.useState)(false);
     const [inviteCodeInput, setInviteCodeInput] = (0, import_react31.useState)("");
+    const [guestTab, setGuestTab] = (0, import_react31.useState)("invited");
+    const [guestExamActive, setGuestExamActive] = (0, import_react31.useState)(false);
     (0, import_react31.useEffect)(() => {
       if (!guestInviteCode) return;
       const iv = setTimeout(() => setGuestGateLoading(false), 900);
       return () => clearTimeout(iv);
     }, [guestInviteCode]);
+    (0, import_react31.useEffect)(() => {
+      try {
+        if (guestInviteCode) localStorage.setItem("opt_guest_invite_code", guestInviteCode);
+      } catch (e) {
+      }
+    }, [guestInviteCode]);
+    (0, import_react31.useEffect)(() => {
+      try {
+        if (guestName) localStorage.setItem("opt_guest_name", guestName);
+      } catch (e) {
+      }
+    }, [guestName]);
     const examInvitesRef = (0, import_react31.useRef)(examInvites);
     examInvitesRef.current = examInvites;
     const profilesRef = (0, import_react31.useRef)(profiles);
@@ -32347,6 +32369,11 @@ Cancelar = mantener el examen guardado`) : true;
     if (guestInviteCode && !sessionUser) {
       const handleExitGuest = () => {
         try {
+          localStorage.removeItem("opt_guest_invite_code");
+          localStorage.removeItem("opt_guest_name");
+        } catch (e) {
+        }
+        try {
           const url = new URL(window.location.href);
           url.searchParams.delete("invite");
           window.location.href = url.toString();
@@ -32428,35 +32455,83 @@ Cancelar = mantener el examen guardado`) : true;
         );
       }
       const guestUser = { uid: `guest_${guestInviteCode}`, name: guestName, role: "guest", pid: null };
+      const guestAllTests = (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0);
+      const inviteSchedule = invite.week != null ? (schedule || []).find((s) => s.week === invite.week) || null : null;
+      const guestNextSchedule = invite.week != null ? (schedule || []).find((s) => s.week === invite.week + 1) || null : null;
+      const guestNextWeekOverride = guestNextSchedule ? (weeks || []).find((w) => w.week === guestNextSchedule.week) : null;
+      const guestNextEffectiveEnd = guestNextWeekOverride && guestNextWeekOverride.postponedDate ? guestNextWeekOverride.postponedDate : guestNextSchedule && guestNextSchedule.end;
+      const guestNextExamDate = guestNextEffectiveEnd ? new Date(guestNextEffectiveEnd[0], guestNextEffectiveEnd[1] - 1, guestNextEffectiveEnd[2]) : null;
+      const guestHasFinishedInvite = !!(inviteTest.results && inviteTest.results[guestUser.uid]);
+      const guestOnSaveResult = (testId, resultPatch) => handleGuestSaveTestResult(testId, resultPatch, guestInviteCode, guestName);
       return guestShell(
-        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "w-full max-w-[440px]", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
-          ExamSection,
-          {
-            my: guestUser,
-            tests: [inviteTest],
-            weeks: [],
-            schedule: [],
-            t,
-            showToast,
-            onSaveTestResult: (testId, resultPatch) => handleGuestSaveTestResult(testId, resultPatch, guestInviteCode, guestName),
-            onUpsertWeek: async () => {
-            },
-            currentWeekNum: invite.week,
-            currentSchedule: null,
-            calcTimeRemaining: () => null,
-            fireConfetti,
-            onExamActiveChange: () => {
-            },
-            ankiDecks,
-            profiles: {},
-            onReviewNormativaAnswer: () => {
-            },
-            onFinalizeReview: () => {
-            },
-            onReopenTestReview: () => {
+        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px]", children: [
+          !guestExamActive && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex bg-[#F1EDE3] rounded-2xl p-1 mb-5 gap-1", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { type: "button", onClick: () => setGuestTab("invited"), className: `flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-none ${guestTab === "invited" ? "bg-white text-[#1A1712] shadow-sm" : "bg-transparent text-[rgba(26,23,18,0.58)]"}`, children: "Tu examen" }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { type: "button", onClick: () => setGuestTab("all"), className: `flex-1 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-none ${guestTab === "all" ? "bg-white text-[#1A1712] shadow-sm" : "bg-transparent text-[rgba(26,23,18,0.58)]"}`, children: "Todos los ex\xE1menes" })
+          ] }),
+          guestTab === "invited" || guestExamActive ? /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(import_jsx_runtime11.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+              ExamSection,
+              {
+                my: guestUser,
+                tests: [inviteTest],
+                weeks,
+                schedule: schedule || [],
+                t,
+                showToast,
+                onSaveTestResult: guestOnSaveResult,
+                onUpsertWeek: async () => {
+                },
+                currentWeekNum: invite.week,
+                currentSchedule: inviteSchedule,
+                calcTimeRemaining,
+                fireConfetti,
+                onExamActiveChange: setGuestExamActive,
+                ankiDecks,
+                profiles: {},
+                onReviewNormativaAnswer: () => {
+                },
+                onFinalizeReview: () => {
+                },
+                onReopenTestReview: () => {
+                }
+              }
+            ),
+            guestHasFinishedInvite && !guestExamActive && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "bg-white rounded-3xl text-center mt-4 p-6 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-[11px] font-extrabold uppercase tracking-wider text-[#8C8579] mb-2", children: "Siguiente examen" }),
+              guestNextSchedule ? /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(import_jsx_runtime11.Fragment, { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-sm font-bold text-[#1A1712] mb-1", children: guestNextSchedule.spec }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-sm font-semibold text-[#3457D6]", children: calcTimeRemaining(guestNextExamDate) })
+              ] }) : /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-sm font-medium text-[#8C8579]", children: "Todav\xEDa no hay fecha para el siguiente examen." })
+            ] })
+          ] }) : /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+            ExamSection,
+            {
+              my: guestUser,
+              tests: guestAllTests,
+              weeks: [],
+              schedule: [],
+              t,
+              showToast,
+              onSaveTestResult: guestOnSaveResult,
+              onUpsertWeek: async () => {
+              },
+              currentWeekNum: invite.week,
+              currentSchedule: null,
+              calcTimeRemaining: () => null,
+              fireConfetti,
+              onExamActiveChange: setGuestExamActive,
+              ankiDecks,
+              profiles: {},
+              onReviewNormativaAnswer: () => {
+              },
+              onFinalizeReview: () => {
+              },
+              onReopenTestReview: () => {
+              }
             }
-          }
-        ) })
+          )
+        ] })
       );
     }
     if (!sessionUser) {
