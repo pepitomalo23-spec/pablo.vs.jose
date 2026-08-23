@@ -14051,6 +14051,12 @@
   var import_jsx_runtime = __toESM(require_jsx_runtime());
   var import_react_dash = __toESM(require_react());
   var import_react_dom_portal_dash = __toESM(require_react_dom());
+  function getPostponedDateFor(weekOverride, pid) {
+    if (!weekOverride) return null;
+    if (pid === "a" && weekOverride.postponedDateA) return weekOverride.postponedDateA;
+    if (pid === "b" && weekOverride.postponedDateB) return weekOverride.postponedDateB;
+    return weekOverride.postponedDate || null;
+  }
   function parseBoeDate(s) {
     if (!s) return null;
     const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/.exec(s);
@@ -14308,7 +14314,7 @@
     const myInitial = (my.name || "?").trim().charAt(0).toUpperCase();
     const otherInitial = (otherName || "?").trim().charAt(0).toUpperCase();
     const dashboardWeekOverride = currentSchedule ? weeks.find((w) => w.week === currentSchedule.week) : null;
-    const dashboardEffectiveEnd = dashboardWeekOverride && dashboardWeekOverride.postponedDate ? dashboardWeekOverride.postponedDate : currentSchedule && currentSchedule.end;
+    const dashboardEffectiveEnd = getPostponedDateFor(dashboardWeekOverride, my && my.pid) || currentSchedule && currentSchedule.end;
     const examDate = dashboardEffectiveEnd ? new Date(dashboardEffectiveEnd[0], dashboardEffectiveEnd[1] - 1, dashboardEffectiveEnd[2]) : null;
     const weeksWonMe = activeWeeksList.filter((w) => {
       const scoreA = w.a || 0, scoreB = w.b || 0;
@@ -17290,7 +17296,7 @@
       }
     }
     const examWeekOverride = currentSchedule ? (weeks || []).find((w) => w.week === currentSchedule.week) : null;
-    const examEffectiveEnd = examWeekOverride && examWeekOverride.postponedDate ? examWeekOverride.postponedDate : currentSchedule && currentSchedule.end;
+    const examEffectiveEnd = getPostponedDateFor(examWeekOverride, my && my.pid) || currentSchedule && currentSchedule.end;
     const examDate = examEffectiveEnd ? new Date(examEffectiveEnd[0], examEffectiveEnd[1] - 1, examEffectiveEnd[2]) : null;
     const now2 = /* @__PURE__ */ new Date();
     const openTime = examDate ? new Date(examDate) : null;
@@ -18648,6 +18654,7 @@ B) Opci\xF3n B*` }),
     const [weekEditEnd, setWeekEditEnd] = (0, import_react7.useState)("");
     const [weekEditGradeA, setWeekEditGradeA] = (0, import_react7.useState)("");
     const [weekEditPostpone, setWeekEditPostpone] = (0, import_react7.useState)("");
+    const [weekEditPostponeScope, setWeekEditPostponeScope] = (0, import_react7.useState)("all");
     const [weekEditGradeB, setWeekEditGradeB] = (0, import_react7.useState)("");
     const [editPwUid, setEditPwUid] = (0, import_react7.useState)(null);
     const [editPwValue, setEditPwValue] = (0, import_react7.useState)("");
@@ -19669,6 +19676,7 @@ B) Opci\xF3n B*` }),
                             const wk = weeks.find((w) => w.week === item.week);
                             setWeekEditGradeA(wk && wk.a !== void 0 && wk.a !== null ? String(wk.a) : "");
                             setWeekEditGradeB(wk && wk.b !== void 0 && wk.b !== null ? String(wk.b) : "");
+                            setWeekEditPostponeScope("all");
                             setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
                           },
                           className: `py-2 px-1 text-[11px] font-bold rounded-xl border transition-all cursor-pointer ${expandedActionType === "edit" ? "bg-stone-700 text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
@@ -19961,6 +19969,47 @@ B) Opci\xF3n B*` }),
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "border-t border-[rgba(30,26,18,0.06)] pt-3 mt-1", children: [
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider mb-1.5", children: "Aplazar examen (si un d\xEDa no se puede hacer)" }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] font-medium mb-2", children: "Cambia solo el d\xEDa en que se puede HACER el examen. El Calendario sigue mostrando la fecha original del temario, sin tocarla." }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-3 gap-1.5 mb-2", children: [
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("all");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "all" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: "Todos"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("a");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDateA ? dateVal(wk.postponedDateA) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "a" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: (profiles["pablomar"] == null ? void 0 : profiles["pablomar"].name) || "Aspirante A"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("b");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDateB ? dateVal(wk.postponedDateB) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "b" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: (profiles["jmar"] == null ? void 0 : profiles["jmar"].name) || "Aspirante B"
+                              }
+                            )
+                          ] }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                             "input",
                             {
@@ -19978,8 +20027,10 @@ B) Opci\xF3n B*` }),
                                 disabled: !weekEditPostpone,
                                 onClick: async () => {
                                   const pD = weekEditPostpone ? weekEditPostpone.split("-").map(Number) : null;
-                                  await onUpsertWeek(item.week, { postponedDate: pD });
-                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")}.`);
+                                  const field = weekEditPostponeScope === "a" ? "postponedDateA" : weekEditPostponeScope === "b" ? "postponedDateB" : "postponedDate";
+                                  await onUpsertWeek(item.week, { [field]: pD });
+                                  const scopeName = weekEditPostponeScope === "a" ? (profiles["pablomar"] == null ? void 0 : profiles["pablomar"].name) || "Aspirante A" : weekEditPostponeScope === "b" ? (profiles["jmar"] == null ? void 0 : profiles["jmar"].name) || "Aspirante B" : "todos";
+                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")} (${scopeName}).`);
                                 },
                                 className: "py-2.5 bg-[#E2921A] text-white font-extrabold text-xs rounded-xl border-none cursor-pointer hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
                                 children: "Guardar aplazamiento"
@@ -19991,7 +20042,8 @@ B) Opci\xF3n B*` }),
                                 type: "button",
                                 onClick: async () => {
                                   setWeekEditPostpone("");
-                                  await onUpsertWeek(item.week, { postponedDate: null });
+                                  const field = weekEditPostponeScope === "a" ? "postponedDateA" : weekEditPostponeScope === "b" ? "postponedDateB" : "postponedDate";
+                                  await onUpsertWeek(item.week, { [field]: null });
                                   showToast("Aplazamiento quitado", `El examen de la Semana ${item.week} vuelve a su fecha original.`);
                                 },
                                 className: "py-2.5 bg-white text-[#8C8579] font-extrabold text-xs rounded-xl border border-[rgba(30,26,18,0.1)] cursor-pointer hover:bg-[#FAF8F5] transition-all",
@@ -20444,6 +20496,7 @@ Cancelar = mantener el examen guardado`) : true;
                             const wk = weeks.find((w) => w.week === item.week);
                             setWeekEditGradeA(wk && wk.a !== void 0 && wk.a !== null ? String(wk.a) : "");
                             setWeekEditGradeB(wk && wk.b !== void 0 && wk.b !== null ? String(wk.b) : "");
+                            setWeekEditPostponeScope("all");
                             setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
                           },
                           className: `py-2 px-1 text-[11px] font-bold rounded-xl border transition-all cursor-pointer ${expandedActionType === "edit" ? "bg-stone-700 text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
@@ -20736,6 +20789,47 @@ Cancelar = mantener el examen guardado`) : true;
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "border-t border-[rgba(30,26,18,0.06)] pt-3 mt-1", children: [
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider mb-1.5", children: "Aplazar examen (si un d\xEDa no se puede hacer)" }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] font-medium mb-2", children: "Cambia solo el d\xEDa en que se puede HACER el examen. El Calendario sigue mostrando la fecha original del temario, sin tocarla." }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-3 gap-1.5 mb-2", children: [
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("all");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "all" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: "Todos"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("a");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDateA ? dateVal(wk.postponedDateA) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "a" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: (profiles["pablomar"] == null ? void 0 : profiles["pablomar"].name) || "Aspirante A"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: () => {
+                                  setWeekEditPostponeScope("b");
+                                  const wk = weeks.find((w) => w.week === item.week);
+                                  setWeekEditPostpone(wk && wk.postponedDateB ? dateVal(wk.postponedDateB) : "");
+                                },
+                                className: `py-1.5 px-1 text-[10.5px] font-bold rounded-lg border transition-all cursor-pointer truncate ${weekEditPostponeScope === "b" ? "bg-[#E2921A] text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
+                                children: (profiles["jmar"] == null ? void 0 : profiles["jmar"].name) || "Aspirante B"
+                              }
+                            )
+                          ] }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                             "input",
                             {
@@ -20753,8 +20847,10 @@ Cancelar = mantener el examen guardado`) : true;
                                 disabled: !weekEditPostpone,
                                 onClick: async () => {
                                   const pD = weekEditPostpone ? weekEditPostpone.split("-").map(Number) : null;
-                                  await onUpsertWeek(item.week, { postponedDate: pD });
-                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")}.`);
+                                  const field = weekEditPostponeScope === "a" ? "postponedDateA" : weekEditPostponeScope === "b" ? "postponedDateB" : "postponedDate";
+                                  await onUpsertWeek(item.week, { [field]: pD });
+                                  const scopeName = weekEditPostponeScope === "a" ? (profiles["pablomar"] == null ? void 0 : profiles["pablomar"].name) || "Aspirante A" : weekEditPostponeScope === "b" ? (profiles["jmar"] == null ? void 0 : profiles["jmar"].name) || "Aspirante B" : "todos";
+                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")} (${scopeName}).`);
                                 },
                                 className: "py-2.5 bg-[#E2921A] text-white font-extrabold text-xs rounded-xl border-none cursor-pointer hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
                                 children: "Guardar aplazamiento"
@@ -20766,7 +20862,8 @@ Cancelar = mantener el examen guardado`) : true;
                                 type: "button",
                                 onClick: async () => {
                                   setWeekEditPostpone("");
-                                  await onUpsertWeek(item.week, { postponedDate: null });
+                                  const field = weekEditPostponeScope === "a" ? "postponedDateA" : weekEditPostponeScope === "b" ? "postponedDateB" : "postponedDate";
+                                  await onUpsertWeek(item.week, { [field]: null });
                                   showToast("Aplazamiento quitado", `El examen de la Semana ${item.week} vuelve a su fecha original.`);
                                 },
                                 className: "py-2.5 bg-white text-[#8C8579] font-extrabold text-xs rounded-xl border border-[rgba(30,26,18,0.1)] cursor-pointer hover:bg-[#FAF8F5] transition-all",
@@ -32242,7 +32339,7 @@ Cancelar = mantener el examen guardado`) : true;
     const { currentWeekNum } = currentWeekInfo();
     const getEffectiveEnd = (s) => {
       const override = (weeks || []).find((w) => w.week === s.week);
-      return override && override.postponedDate ? override.postponedDate : s.end;
+      return getPostponedDateFor(override, sessionUser && sessionUser.pid) || s.end;
     };
     const findClosestSchedule = () => {
       if (!schedule || schedule.length === 0) {
@@ -32459,7 +32556,7 @@ Cancelar = mantener el examen guardado`) : true;
       const inviteSchedule = invite.week != null ? (schedule || []).find((s) => s.week === invite.week) || null : null;
       const guestNextSchedule = invite.week != null ? (schedule || []).find((s) => s.week === invite.week + 1) || null : null;
       const guestNextWeekOverride = guestNextSchedule ? (weeks || []).find((w) => w.week === guestNextSchedule.week) : null;
-      const guestNextEffectiveEnd = guestNextWeekOverride && guestNextWeekOverride.postponedDate ? guestNextWeekOverride.postponedDate : guestNextSchedule && guestNextSchedule.end;
+      const guestNextEffectiveEnd = getPostponedDateFor(guestNextWeekOverride, null) || guestNextSchedule && guestNextSchedule.end;
       const guestNextExamDate = guestNextEffectiveEnd ? new Date(guestNextEffectiveEnd[0], guestNextEffectiveEnd[1] - 1, guestNextEffectiveEnd[2]) : null;
       const guestHasFinishedInvite = !!(inviteTest.results && inviteTest.results[guestUser.uid]);
       const guestOnSaveResult = (testId, resultPatch) => handleGuestSaveTestResult(testId, resultPatch, guestInviteCode, guestName);
