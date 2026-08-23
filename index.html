@@ -21278,13 +21278,17 @@ Cancelar = mantener el examen guardado`) : true;
             const weekNum = weekMatch ? parseInt(weekMatch[1], 10) : null;
             if (weekNum === null) return null;
             const results = t2.results || {};
+            const weekOverride = (weeks || []).find((w) => w.week === weekNum);
             const entries = Object.keys(results).map((uid) => {
               const r = results[uid];
               const name = uid === "pablomar" ? ((profiles["pablomar"] && profiles["pablomar"].name) || "Pablomar") : uid === "jmar" ? ((profiles["jmar"] && profiles["jmar"].name) || "J.mar") : r.guestName || "Invitado";
               const isGuest = uid.indexOf("guest_") === 0;
               const done = !r.pendingReview;
-              const score = r.total ? Math.round(r.score / r.total * 10 * 100) / 100 : 0;
-              return { uid, name, isGuest, done, score };
+              const rawScore = r.total ? Math.round(r.score / r.total * 10 * 100) / 100 : 0;
+              const overrideVal = uid === "pablomar" ? weekOverride && weekOverride.a : uid === "jmar" ? weekOverride && weekOverride.b : void 0;
+              const score = typeof overrideVal === "number" && !isNaN(overrideVal) ? overrideVal : rawScore;
+              const isOverridden = typeof overrideVal === "number" && !isNaN(overrideVal) && overrideVal !== rawScore;
+              return { uid, name, isGuest, done, score, isOverridden };
             });
             if (entries.length === 0) return null;
             const doneEntries = entries.filter((e2) => e2.done);
@@ -21306,12 +21310,14 @@ Cancelar = mantener el examen guardado`) : true;
                 return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                   "span",
                   {
+                    title: e2.isOverridden ? "Nota corregida manualmente por el administrador" : void 0,
                     className: `text-[10.5px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${isWinner ? "bg-[rgba(18,161,107,0.12)] text-[#12A16B]" : e2.isGuest ? "bg-[rgba(52,87,214,0.09)] text-[#3457D6]" : "bg-[#F1EDE3] text-[#8C8579]"}`,
                     children: [
                       isWinner ? "\u{1F3C6} " : "",
                       e2.name,
                       ": ",
-                      e2.done ? `${e2.score.toFixed(2)}/10` : "pendiente"
+                      e2.done ? `${e2.score.toFixed(2)}/10` : "pendiente",
+                      e2.isOverridden ? " \u270F\uFE0F" : ""
                     ]
                   },
                   e2.uid
