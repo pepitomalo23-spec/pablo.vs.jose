@@ -14307,7 +14307,9 @@
     const monthLabel = MONTHS_FULL[currentMonthIdx];
     const myInitial = (my.name || "?").trim().charAt(0).toUpperCase();
     const otherInitial = (otherName || "?").trim().charAt(0).toUpperCase();
-    const examDate = currentSchedule.end ? new Date(currentSchedule.end[0], currentSchedule.end[1] - 1, currentSchedule.end[2]) : null;
+    const dashboardWeekOverride = currentSchedule ? weeks.find((w) => w.week === currentSchedule.week) : null;
+    const dashboardEffectiveEnd = dashboardWeekOverride && dashboardWeekOverride.postponedDate ? dashboardWeekOverride.postponedDate : currentSchedule && currentSchedule.end;
+    const examDate = dashboardEffectiveEnd ? new Date(dashboardEffectiveEnd[0], dashboardEffectiveEnd[1] - 1, dashboardEffectiveEnd[2]) : null;
     const weeksWonMe = activeWeeksList.filter((w) => {
       const scoreA = w.a || 0, scoreB = w.b || 0;
       if (scoreA === scoreB) return false;
@@ -17287,7 +17289,9 @@
         ] });
       }
     }
-    const examDate = currentSchedule && currentSchedule.end ? new Date(currentSchedule.end[0], currentSchedule.end[1] - 1, currentSchedule.end[2]) : null;
+    const examWeekOverride = currentSchedule ? (weeks || []).find((w) => w.week === currentSchedule.week) : null;
+    const examEffectiveEnd = examWeekOverride && examWeekOverride.postponedDate ? examWeekOverride.postponedDate : currentSchedule && currentSchedule.end;
+    const examDate = examEffectiveEnd ? new Date(examEffectiveEnd[0], examEffectiveEnd[1] - 1, examEffectiveEnd[2]) : null;
     const now2 = /* @__PURE__ */ new Date();
     const openTime = examDate ? new Date(examDate) : null;
     if (openTime) openTime.setHours(9, 0, 0, 0);
@@ -18643,6 +18647,7 @@ B) Opci\xF3n B*` }),
     const [weekEditStart, setWeekEditStart] = (0, import_react7.useState)("");
     const [weekEditEnd, setWeekEditEnd] = (0, import_react7.useState)("");
     const [weekEditGradeA, setWeekEditGradeA] = (0, import_react7.useState)("");
+    const [weekEditPostpone, setWeekEditPostpone] = (0, import_react7.useState)("");
     const [weekEditGradeB, setWeekEditGradeB] = (0, import_react7.useState)("");
     const [editPwUid, setEditPwUid] = (0, import_react7.useState)(null);
     const [editPwValue, setEditPwValue] = (0, import_react7.useState)("");
@@ -19664,6 +19669,7 @@ B) Opci\xF3n B*` }),
                             const wk = weeks.find((w) => w.week === item.week);
                             setWeekEditGradeA(wk && wk.a !== void 0 && wk.a !== null ? String(wk.a) : "");
                             setWeekEditGradeB(wk && wk.b !== void 0 && wk.b !== null ? String(wk.b) : "");
+                            setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
                           },
                           className: `py-2 px-1 text-[11px] font-bold rounded-xl border transition-all cursor-pointer ${expandedActionType === "edit" ? "bg-stone-700 text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
                           children: "\u{1F4DA} Temario / Editar"
@@ -19951,6 +19957,48 @@ B) Opci\xF3n B*` }),
                               children: "Guardar Notas de esta Semana"
                             }
                           )
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "border-t border-[rgba(30,26,18,0.06)] pt-3 mt-1", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider mb-1.5", children: "Aplazar examen (si un d\xEDa no se puede hacer)" }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] font-medium mb-2", children: "Cambia solo el d\xEDa en que se puede HACER el examen. El Calendario sigue mostrando la fecha original del temario, sin tocarla." }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "input",
+                            {
+                              value: weekEditPostpone,
+                              onChange: (e) => setWeekEditPostpone(e.target.value),
+                              className: "w-full bg-[#F1EDE3] border border-transparent rounded-xl py-2 px-3 font-semibold text-xs text-[#1A1712] mb-2",
+                              type: "date"
+                            }
+                          ),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-2 gap-2", children: [
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                disabled: !weekEditPostpone,
+                                onClick: async () => {
+                                  const pD = weekEditPostpone ? weekEditPostpone.split("-").map(Number) : null;
+                                  await onUpsertWeek(item.week, { postponedDate: pD });
+                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")}.`);
+                                },
+                                className: "py-2.5 bg-[#E2921A] text-white font-extrabold text-xs rounded-xl border-none cursor-pointer hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
+                                children: "Aplazar a esta fecha"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: async () => {
+                                  setWeekEditPostpone("");
+                                  await onUpsertWeek(item.week, { postponedDate: null });
+                                  showToast("Aplazamiento quitado", `El examen de la Semana ${item.week} vuelve a su fecha original.`);
+                                },
+                                className: "py-2.5 bg-white text-[#8C8579] font-extrabold text-xs rounded-xl border border-[rgba(30,26,18,0.1)] cursor-pointer hover:bg-[#FAF8F5] transition-all",
+                                children: "Quitar aplazamiento"
+                              }
+                            )
+                          ] })
                         ] }),
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-2 gap-3 pt-2", children: [
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
@@ -20396,6 +20444,7 @@ Cancelar = mantener el examen guardado`) : true;
                             const wk = weeks.find((w) => w.week === item.week);
                             setWeekEditGradeA(wk && wk.a !== void 0 && wk.a !== null ? String(wk.a) : "");
                             setWeekEditGradeB(wk && wk.b !== void 0 && wk.b !== null ? String(wk.b) : "");
+                            setWeekEditPostpone(wk && wk.postponedDate ? dateVal(wk.postponedDate) : "");
                           },
                           className: `py-2 px-1 text-[11px] font-bold rounded-xl border transition-all cursor-pointer ${expandedActionType === "edit" ? "bg-stone-700 text-white border-transparent" : "bg-white text-[#1A1712] border-[rgba(30,26,18,0.08)] hover:bg-[#FAF8F5]"}`,
                           children: "\u{1F4DA} Temario / Editar"
@@ -20683,6 +20732,48 @@ Cancelar = mantener el examen guardado`) : true;
                               children: "Guardar Notas de esta Semana"
                             }
                           )
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "border-t border-[rgba(30,26,18,0.06)] pt-3 mt-1", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider mb-1.5", children: "Aplazar examen (si un d\xEDa no se puede hacer)" }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] font-medium mb-2", children: "Cambia solo el d\xEDa en que se puede HACER el examen. El Calendario sigue mostrando la fecha original del temario, sin tocarla." }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "input",
+                            {
+                              value: weekEditPostpone,
+                              onChange: (e) => setWeekEditPostpone(e.target.value),
+                              className: "w-full bg-[#F1EDE3] border border-transparent rounded-xl py-2 px-3 font-semibold text-xs text-[#1A1712] mb-2",
+                              type: "date"
+                            }
+                          ),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-2 gap-2", children: [
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                disabled: !weekEditPostpone,
+                                onClick: async () => {
+                                  const pD = weekEditPostpone ? weekEditPostpone.split("-").map(Number) : null;
+                                  await onUpsertWeek(item.week, { postponedDate: pD });
+                                  showToast("Examen aplazado", `El examen de la Semana ${item.week} se podr\xE1 hacer el ${weekEditPostpone.split("-").reverse().join("/")}.`);
+                                },
+                                className: "py-2.5 bg-[#E2921A] text-white font-extrabold text-xs rounded-xl border-none cursor-pointer hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
+                                children: "Aplazar a esta fecha"
+                              }
+                            ),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: async () => {
+                                  setWeekEditPostpone("");
+                                  await onUpsertWeek(item.week, { postponedDate: null });
+                                  showToast("Aplazamiento quitado", `El examen de la Semana ${item.week} vuelve a su fecha original.`);
+                                },
+                                className: "py-2.5 bg-white text-[#8C8579] font-extrabold text-xs rounded-xl border border-[rgba(30,26,18,0.1)] cursor-pointer hover:bg-[#FAF8F5] transition-all",
+                                children: "Quitar aplazamiento"
+                              }
+                            )
+                          ] })
                         ] }),
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "grid grid-cols-2 gap-3 pt-2", children: [
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
