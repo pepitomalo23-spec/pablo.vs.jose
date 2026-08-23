@@ -32218,29 +32218,38 @@ Cancelar = mantener el examen guardado`) : true;
       return { currentWeekNum: currentWeekNum2, currentWeekDoc };
     };
     const { currentWeekNum } = currentWeekInfo();
+    const getEffectiveEnd = (s) => {
+      const override = (weeks || []).find((w) => w.week === s.week);
+      return override && override.postponedDate ? override.postponedDate : s.end;
+    };
     const findClosestSchedule = () => {
       if (!schedule || schedule.length === 0) {
         return { week: 1, spec: "Cargando...", leg: "Cargando...", start: null, end: null };
       }
       const now2 = /* @__PURE__ */ new Date();
-      const itemsWithEnd = schedule.filter((s) => s.end);
+      const itemsWithEnd = schedule.filter((s) => getEffectiveEnd(s));
       if (itemsWithEnd.length === 0) {
         return schedule.find((s) => s.week === currentWeekNum) || schedule[0] || { week: 1, spec: "Cargando...", leg: "Cargando...", start: null, end: null };
       }
       const futureOrToday = itemsWithEnd.filter((s) => {
-        const examEndDate = new Date(s.end[0], s.end[1] - 1, s.end[2], 21, 0, 0, 0);
+        const end = getEffectiveEnd(s);
+        const examEndDate = new Date(end[0], end[1] - 1, end[2], 21, 0, 0, 0);
         return examEndDate.getTime() >= now2.getTime();
       });
       if (futureOrToday.length > 0) {
         return futureOrToday.reduce((closest, current) => {
-          const dateClosest = new Date(closest.end[0], closest.end[1] - 1, closest.end[2], 9, 0, 0, 0).getTime();
-          const dateCurrent = new Date(current.end[0], current.end[1] - 1, current.end[2], 9, 0, 0, 0).getTime();
+          const closestEnd = getEffectiveEnd(closest);
+          const currentEnd = getEffectiveEnd(current);
+          const dateClosest = new Date(closestEnd[0], closestEnd[1] - 1, closestEnd[2], 9, 0, 0, 0).getTime();
+          const dateCurrent = new Date(currentEnd[0], currentEnd[1] - 1, currentEnd[2], 9, 0, 0, 0).getTime();
           return dateCurrent < dateClosest ? current : closest;
         });
       } else {
         return itemsWithEnd.reduce((mostRecent, current) => {
-          const dateRecent = new Date(mostRecent.end[0], mostRecent.end[1] - 1, mostRecent.end[2], 9, 0, 0, 0).getTime();
-          const dateCurrent = new Date(current.end[0], current.end[1] - 1, current.end[2], 9, 0, 0, 0).getTime();
+          const mostRecentEnd = getEffectiveEnd(mostRecent);
+          const currentEnd = getEffectiveEnd(current);
+          const dateRecent = new Date(mostRecentEnd[0], mostRecentEnd[1] - 1, mostRecentEnd[2], 9, 0, 0, 0).getTime();
+          const dateCurrent = new Date(currentEnd[0], currentEnd[1] - 1, currentEnd[2], 9, 0, 0, 0).getTime();
           return dateCurrent > dateRecent ? current : mostRecent;
         });
       }
