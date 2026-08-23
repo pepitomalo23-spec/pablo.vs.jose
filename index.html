@@ -17287,7 +17287,7 @@
         ] });
       }
     }
-    const examDate = currentSchedule.end ? new Date(currentSchedule.end[0], currentSchedule.end[1] - 1, currentSchedule.end[2]) : null;
+    const examDate = currentSchedule && currentSchedule.end ? new Date(currentSchedule.end[0], currentSchedule.end[1] - 1, currentSchedule.end[2]) : null;
     const now2 = /* @__PURE__ */ new Date();
     const openTime = examDate ? new Date(examDate) : null;
     if (openTime) openTime.setHours(9, 0, 0, 0);
@@ -17295,7 +17295,7 @@
     if (closeTime) closeTime.setHours(21, 0, 0, 0);
     const isExamOpen = openTime && closeTime && now2.getTime() >= openTime.getTime() && now2.getTime() <= closeTime.getTime();
     const hasAnyRealTest = tests.some((t2) => Array.isArray(t2.questions) && t2.questions.length > 0);
-    const isLocked = !hasAnyRealTest || !isExamOpen;
+    const isLocked = currentSchedule ? !hasAnyRealTest || !isExamOpen : false;
     return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "opt-fade-in-up pb-12", children: [
       /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "mb-6", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { className: "text-[1.65rem] sm:text-3xl font-extrabold tracking-tight text-[#1A1712] mb-1", children: t("examTitle") }),
@@ -17325,7 +17325,7 @@
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Lock, { size: 16 }),
           calcTimeRemaining(examDate)
         ] })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "space-y-3", children: tests.filter((t2) => t2.id === `week-${currentSchedule.week}`).map((t2) => {
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "space-y-3", children: tests.filter((t2) => currentSchedule ? t2.id === `week-${currentSchedule.week}` : true).map((t2) => {
         const myResult = t2.results && t2.results[my.uid];
         if (myResult) {
           const otherResult = otherUid ? t2.results && t2.results[otherUid] : true;
