@@ -17296,7 +17296,7 @@
     const openTime = examDate ? new Date(examDate) : null;
     if (openTime) openTime.setHours(9, 0, 0, 0);
     const closeTime = examDate ? new Date(examDate) : null;
-    if (closeTime) closeTime.setHours(21, 0, 0, 0);
+    if (closeTime) closeTime.setHours(23, 59, 59, 999);
     const isExamOpen = openTime && closeTime && now2.getTime() >= openTime.getTime() && now2.getTime() <= closeTime.getTime();
     const hasAnyRealTest = tests.some((t2) => Array.isArray(t2.questions) && t2.questions.length > 0);
     const isLocked = currentSchedule ? !hasAnyRealTest || !isExamOpen : false;
@@ -17308,7 +17308,7 @@
       isLocked ? /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "bg-white rounded-3xl flex flex-col items-center p-8 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "w-16 h-16 rounded-full bg-[#F1EDE3] flex items-center justify-center mb-4 text-[#D8D2C2] shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Lock, { size: 32 }) }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "text-base font-bold text-[#1A1712] mb-1 text-center", children: examDate ? `${DAYS_FULL[examDate.getDay()]} ${examDate.getDate()} de ${MONTHS_FULL[examDate.getMonth()]}` : "Fecha por asignar" }),
-        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "text-xs font-bold text-[#8C8579] mb-5 text-center uppercase tracking-wider", children: "Horario de apertura: 09:00 a 21:00" }),
+        /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "text-xs font-bold text-[#8C8579] mb-5 text-center uppercase tracking-wider", children: "Horario de apertura: 09:00 a 00:00" }),
         /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6", children: [
           /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "p-3 bg-[rgba(225,78,60,0.04)] border border-[rgba(225,78,60,0.08)] rounded-xl flex flex-col justify-between", children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "text-[10px] font-black text-[#E14E3C] uppercase tracking-widest mb-1 flex items-center gap-1", children: [
@@ -32233,7 +32233,7 @@ Cancelar = mantener el examen guardado`) : true;
       }
       const futureOrToday = itemsWithEnd.filter((s) => {
         const end = getEffectiveEnd(s);
-        const examEndDate = new Date(end[0], end[1] - 1, end[2], 21, 0, 0, 0);
+        const examEndDate = new Date(end[0], end[1] - 1, end[2], 23, 59, 59, 999);
         return examEndDate.getTime() >= now2.getTime();
       });
       if (futureOrToday.length > 0) {
@@ -32264,7 +32264,7 @@ Cancelar = mantener el examen guardado`) : true;
       const diff = target.getTime() - now2.getTime();
       if (diff <= 0) {
         const closeTime = new Date(examDate);
-        closeTime.setHours(21, 0, 0, 0);
+        closeTime.setHours(23, 59, 59, 999);
         if (now2.getTime() > closeTime.getTime()) {
           return "Examen finalizado";
         }
