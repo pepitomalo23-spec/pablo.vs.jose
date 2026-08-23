@@ -18651,6 +18651,7 @@ B) Opci\xF3n B*` }),
     const [inviteTestId, setInviteTestId] = (0, import_react7.useState)("");
     const [inviteCreating, setInviteCreating] = (0, import_react7.useState)(false);
     const [copiedInviteCode, setCopiedInviteCode] = (0, import_react7.useState)("");
+    const [justCreatedCode, setJustCreatedCode] = (0, import_react7.useState)(null);
     const [studentPreview, setStudentPreview] = (0, import_react7.useState)(null);
     const [expandedLegName, setExpandedLegName] = (0, import_react7.useState)(null);
     const [legLineType, setLegLineType] = (0, import_react7.useState)("titulo");
@@ -20801,7 +20802,12 @@ Cancelar = mantener el examen guardado`) : true;
               ] }),
               advancedTab === "invites" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 text-left", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Invitar a un examen" }),
-                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[11px] text-[#8C8579] font-medium -mt-2", children: "Genera un enlace de acceso puntual para que alguien externo haga un examen concreto, sin necesidad de crearle una cuenta. El enlace solo sirve para ese examen." }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[11px] text-[#8C8579] font-medium -mt-2", children: "Genera un c\xF3digo de acceso puntual para que alguien externo haga un examen concreto, sin necesidad de crearle una cuenta. Le das el c\xF3digo (de palabra o por WhatsApp) y lo escribe en la app. El c\xF3digo solo sirve para ese examen." }),
+                justCreatedCode && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[rgba(18,161,107,0.08)] border-2 border-[#12A16B] rounded-2xl p-4 text-center space-y-2", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10px] font-extrabold uppercase tracking-wider text-[#12A16B]", children: "\xA1Listo! Dale este c\xF3digo" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-3xl font-black tracking-[0.15em] text-[#1A1712] font-mono", children: justCreatedCode }),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("button", { type: "button", onClick: () => setJustCreatedCode(null), className: "text-[10px] font-bold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#1A1712]", children: "Entendido" })
+                ] }),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[#FAF8F5] border border-[rgba(30,26,18,0.06)] rounded-2xl p-3.5 space-y-2.5", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider", children: "Examen" }),
                   (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "A\xFAn no hay ning\xFAn examen publicado con preguntas." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
@@ -20831,17 +20837,11 @@ Cancelar = mantener el examen guardado`) : true;
                           const code = await onCreateInvite(chosen.id, chosen.title || chosen.id, week);
                           setInviteCreating(false);
                           setInviteTestId("");
-                          showToast("Invitaci\xF3n creada", `Enlace generado para \u201C${chosen.title || chosen.id}\u201D.`);
-                          try {
-                            const link = `${window.location.origin}${window.location.pathname}?invite=${code}`;
-                            await navigator.clipboard.writeText(link);
-                            setCopiedInviteCode(code);
-                            setTimeout(() => setCopiedInviteCode(""), 2500);
-                          } catch (e) {
-                          }
+                          setJustCreatedCode(code);
+                          showToast("Invitaci\xF3n creada", `C\xF3digo generado para \u201C${chosen.title || chosen.id}\u201D.`);
                         },
                         className: "w-full bg-[#3457D6] text-white border-none rounded-xl py-2.5 font-bold text-xs cursor-pointer hover:brightness-95 active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
-                        children: inviteCreating ? "Generando\u2026" : "Generar enlace de invitaci\xF3n"
+                        children: inviteCreating ? "Generando\u2026" : "Generar c\xF3digo de invitaci\xF3n"
                       }
                     )
                   ] })
@@ -20856,44 +20856,43 @@ Cancelar = mantener el examen guardado`) : true;
                       className: `bg-[#FAF8F5] border rounded-2xl p-3.5 space-y-2 ${inv.active ? "border-[rgba(30,26,18,0.06)]" : "border-[rgba(225,78,60,0.2)] opacity-60"}`,
                       children: [
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-center justify-between gap-2", children: [
-                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
-                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-extrabold text-[#1A1712] truncate", children: inv.title }),
-                            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-mono font-bold text-[#8C8579]", children: [
-                              "C\xF3digo: ",
-                              inv.code
-                            ] })
-                          ] }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-extrabold text-[#1A1712] truncate min-w-0", children: inv.title }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `shrink-0 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${inv.active ? "text-[#12A16B] bg-[rgba(18,161,107,0.1)]" : "text-[#E14E3C] bg-[rgba(225,78,60,0.1)]"}`, children: inv.active ? "Activa" : "Revocada" })
                         ] }),
-                        guestsList.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] italic", children: "Nadie ha entrado con este enlace todav\xEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10.5px] text-[#8C8579]", children: guestsList.map((g, gi) => `${g.name}`).join(", ") }),
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-                          "input",
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                          "button",
                           {
-                            readOnly: true,
-                            value: link,
-                            onFocus: (e) => e.target.select(),
-                            onClick: (e) => e.target.select(),
-                            className: "w-full bg-white border border-[rgba(30,26,18,0.1)] rounded-lg px-2.5 py-2 text-[10px] font-mono text-[#1A1712] outline-none truncate"
+                            type: "button",
+                            onClick: async () => {
+                              try {
+                                await navigator.clipboard.writeText(inv.code);
+                              } catch (e) {
+                              }
+                              setCopiedInviteCode(inv.code);
+                              setTimeout(() => setCopiedInviteCode(""), 2500);
+                            },
+                            className: "w-full flex items-center justify-between bg-white border border-[rgba(30,26,18,0.1)] rounded-xl px-3 py-2 cursor-pointer hover:border-[#3457D6] transition-all",
+                            children: [
+                              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-lg font-black tracking-[0.12em] text-[#1A1712] font-mono", children: inv.code }),
+                              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[10px] font-extrabold text-[#3457D6]", children: copiedInviteCode === inv.code ? "\xA1Copiado!" : "Copiar c\xF3digo" })
+                            ]
                           }
                         ),
-                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-1.5", children: [
+                        guestsList.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] italic", children: "Nadie ha entrado con este c\xF3digo todav\xEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10.5px] text-[#8C8579]", children: guestsList.map((g, gi) => `${g.name}`).join(", ") }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("details", { className: "text-[10px]", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("summary", { className: "text-[#8C8579] font-bold cursor-pointer select-none", children: "O compartir como enlace" }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-                            "button",
+                            "input",
                             {
-                              type: "button",
-                              onClick: async () => {
-                                try {
-                                  await navigator.clipboard.writeText(link);
-                                  setCopiedInviteCode(inv.code);
-                                  setTimeout(() => setCopiedInviteCode(""), 2500);
-                                } catch (e) {
-                                }
-                              },
-                              className: "flex-1 text-[10px] font-extrabold text-[#3457D6] bg-[rgba(52,87,214,0.08)] border-none rounded-lg px-2 py-1.5 cursor-pointer hover:bg-[rgba(52,87,214,0.16)]",
-                              children: copiedInviteCode === inv.code ? "\xA1Copiado!" : "Copiar enlace"
+                              readOnly: true,
+                              value: link,
+                              onFocus: (e) => e.target.select(),
+                              onClick: (e) => e.target.select(),
+                              className: "mt-1.5 w-full bg-white border border-[rgba(30,26,18,0.1)] rounded-lg px-2.5 py-2 text-[10px] font-mono text-[#1A1712] outline-none truncate"
                             }
-                          ),
-                          inv.active && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                          )
+                        ] }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex gap-1.5", children: inv.active && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                             "button",
                             {
                               type: "button",
@@ -20901,8 +20900,7 @@ Cancelar = mantener el examen guardado`) : true;
                               className: "text-[10px] font-extrabold text-[#E14E3C] bg-[rgba(225,78,60,0.1)] border-none rounded-lg px-2.5 py-1.5 cursor-pointer hover:bg-[rgba(225,78,60,0.18)]",
                               children: "Revocar"
                             }
-                          )
-                        ] })
+                          ) })
                       ]
                     },
                     inv.code
@@ -32279,14 +32277,15 @@ Cancelar = mantener el examen guardado`) : true;
       ] });
       if (guestGateLoading && (!invite || !inviteTest)) {
         return guestShell(
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 text-center shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-semibold text-[#8C8579]", children: "Cargando invitaci\xF3n\u2026" }) })
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 text-center shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-semibold text-[#8C8579]", children: "Comprobando c\xF3digo\u2026" }) })
         );
       }
       if (!invite || !invite.active || !inviteTest) {
+        const reason = !invite ? `No existe ninguna invitaci\xF3n activa con el c\xF3digo \u201C${guestInviteCode}\u201D. Revisa que est\xE9 bien escrito (sin espacios) o pide uno nuevo al administrador.` : !invite.active ? "Esta invitaci\xF3n ha sido desactivada por el administrador. Pide una nueva." : "El examen de esta invitaci\xF3n ya no est\xE1 disponible. Pide una invitaci\xF3n nueva al administrador.";
         return guestShell(
           /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 text-center shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-2", children: "Enlace no v\xE1lido" }),
-            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-6", children: "Este enlace de invitaci\xF3n no existe o ha sido desactivado por el administrador. Pide uno nuevo." }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-2", children: "C\xF3digo no v\xE1lido" }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-6", children: reason }),
             /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { onClick: handleExitGuest, className: "bg-[#E14E3C] text-white border-none rounded-full py-3 px-6 font-bold text-sm cursor-pointer hover:brightness-95", children: "Ir al inicio de sesi\xF3n" })
           ] })
         );
@@ -32463,7 +32462,7 @@ Cancelar = mantener el examen guardado`) : true;
                     "input",
                     {
                       value: inviteCodeInput,
-                      onChange: (e) => setInviteCodeInput(e.target.value.toUpperCase()),
+                      onChange: (e) => setInviteCodeInput(e.target.value.toUpperCase().replace(/\s+/g, "")),
                       onKeyDown: (e) => {
                         if (e.key === "Enter" && inviteCodeInput.trim()) setGuestInviteCode(inviteCodeInput.trim());
                       },
