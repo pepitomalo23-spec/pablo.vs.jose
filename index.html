@@ -18590,6 +18590,9 @@ B) Opci\xF3n B*` }),
     onMarkLawNoticeSeen,
     legislationDetails,
     onSaveLegislationDetails,
+    examInvites,
+    onCreateInvite,
+    onRevokeInvite,
     forceAdminView = false
   }) => {
     const [activeView, setActiveView] = (0, import_react7.useState)(
@@ -18645,6 +18648,9 @@ B) Opci\xF3n B*` }),
     const [editPwValue, setEditPwValue] = (0, import_react7.useState)("");
     const [advancedSettingsOpen, setAdvancedSettingsOpen] = (0, import_react7.useState)(false);
     const [advancedTab, setAdvancedTab] = (0, import_react7.useState)("accounts");
+    const [inviteTestId, setInviteTestId] = (0, import_react7.useState)("");
+    const [inviteCreating, setInviteCreating] = (0, import_react7.useState)(false);
+    const [copiedInviteCode, setCopiedInviteCode] = (0, import_react7.useState)("");
     const [studentPreview, setStudentPreview] = (0, import_react7.useState)(null);
     const [expandedLegName, setExpandedLegName] = (0, import_react7.useState)(null);
     const [legLineType, setLegLineType] = (0, import_react7.useState)("titulo");
@@ -19704,7 +19710,7 @@ B) Opci\xF3n B*` }),
                               className: "flex justify-between items-center bg-white border border-[rgba(30,26,18,0.04)] p-3 rounded-xl gap-2",
                               children: [
                                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex flex-col min-w-0", children: [
-                                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-xs font-bold text-[#1A1712]", children: u ? u.name : "Aspirante de prueba" }),
+                                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-xs font-bold text-[#1A1712]", children: u ? u.name : (resVal && resVal.guestName || "Invitado") }),
                                   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "text-[9.5px] font-semibold text-[#8C8579]", children: [
                                     "Rol: ",
                                     (u == null ? void 0 : u.role) === "admin" ? "Administrador" : (u == null ? void 0 : u.pid) === "a" ? "Alumno A" : "Alumno B"
@@ -19729,7 +19735,7 @@ B) Opci\xF3n B*` }),
                                         setStatsSectionReview({
                                           submitted: true,
                                           isAdminReview: true,
-                                          category: `${u ? u.name : "Aspirante de prueba"} \u2014 ${weekTest.title || "Examen"}`,
+                                          category: `${u ? u.name : (resVal && resVal.guestName || "Invitado")} \u2014 ${weekTest.title || "Examen"}`,
                                           questions: weekTest.questions || [],
                                           answers: resVal.answers || [],
                                           pendingGrades: resVal.pendingGrades || null,
@@ -20436,7 +20442,7 @@ Cancelar = mantener el examen guardado`) : true;
                               className: "flex justify-between items-center bg-white border border-[rgba(30,26,18,0.04)] p-3 rounded-xl gap-2",
                               children: [
                                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex flex-col min-w-0", children: [
-                                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-xs font-bold text-[#1A1712]", children: u ? u.name : "Aspirante de prueba" }),
+                                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-xs font-bold text-[#1A1712]", children: u ? u.name : (resVal && resVal.guestName || "Invitado") }),
                                   /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("span", { className: "text-[9.5px] font-semibold text-[#8C8579]", children: [
                                     "Rol: ",
                                     (u == null ? void 0 : u.role) === "admin" ? "Administrador" : (u == null ? void 0 : u.pid) === "a" ? "Alumno A" : "Alumno B"
@@ -20461,7 +20467,7 @@ Cancelar = mantener el examen guardado`) : true;
                                         setStatsSectionReview({
                                           submitted: true,
                                           isAdminReview: true,
-                                          category: `${u ? u.name : "Aspirante de prueba"} \u2014 ${weekTest.title || "Examen"}`,
+                                          category: `${u ? u.name : (resVal && resVal.guestName || "Invitado")} \u2014 ${weekTest.title || "Examen"}`,
                                           questions: weekTest.questions || [],
                                           answers: resVal.answers || [],
                                           pendingGrades: resVal.pendingGrades || null,
@@ -20779,11 +20785,119 @@ Cancelar = mantener el examen guardado`) : true;
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                   "button",
                   {
+                    onClick: () => setAdvancedTab("invites"),
+                    className: `flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-all ${advancedTab === "invites" ? "bg-white text-[#1A1712] shadow-sm" : "text-[rgba(26,23,18,0.58)]"}`,
+                    children: "Invitados"
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                  "button",
+                  {
                     onClick: () => setAdvancedTab("reset"),
                     className: `flex-1 text-[11px] font-bold py-1.5 rounded-lg transition-all ${advancedTab === "reset" ? "bg-white text-[#1A1712] shadow-sm" : "text-[rgba(26,23,18,0.58)]"}`,
                     children: "Mantenimiento"
                   }
                 )
+              ] }),
+              advancedTab === "invites" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 text-left", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Invitar a un examen" }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[11px] text-[#8C8579] font-medium -mt-2", children: "Genera un enlace de acceso puntual para que alguien externo haga un examen concreto, sin necesidad de crearle una cuenta. El enlace solo sirve para ese examen." }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[#FAF8F5] border border-[rgba(30,26,18,0.06)] rounded-2xl p-3.5 space-y-2.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider", children: "Examen" }),
+                  (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "AxFAn no hay ningxFAn examen publicado con preguntas." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                      "select",
+                      {
+                        value: inviteTestId,
+                        onChange: (e) => setInviteTestId(e.target.value),
+                        className: "w-full bg-white border border-[rgba(30,26,18,0.12)] rounded-xl py-2.5 px-3 font-semibold text-xs text-[#1A1712] outline-none",
+                        children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "", children: "Selecciona un examenu2026" }),
+                          (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).map((t2) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: t2.id, children: t2.title || t2.id }, t2.id))
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                      "button",
+                      {
+                        type: "button",
+                        disabled: !inviteTestId || inviteCreating,
+                        onClick: async () => {
+                          const chosen = (tests || []).find((t2) => t2.id === inviteTestId);
+                          if (!chosen) return;
+                          setInviteCreating(true);
+                          const weekMatch = /^week-(d+)$/.exec(chosen.id);
+                          const week = weekMatch ? parseInt(weekMatch[1], 10) : null;
+                          const code = await onCreateInvite(chosen.id, chosen.title || chosen.id, week);
+                          setInviteCreating(false);
+                          setInviteTestId("");
+                          showToast("InvitacixF3n creada", `Enlace generado para u201C${chosen.title || chosen.id}u201D.`);
+                          try {
+                            const link = `${window.location.origin}${window.location.pathname}?invite=${code}`;
+                            await navigator.clipboard.writeText(link);
+                            setCopiedInviteCode(code);
+                            setTimeout(() => setCopiedInviteCode(""), 2500);
+                          } catch (e) {
+                          }
+                        },
+                        className: "w-full bg-[#3457D6] text-white border-none rounded-xl py-2.5 font-bold text-xs cursor-pointer hover:brightness-95 active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
+                        children: inviteCreating ? "Generandou2026" : "Generar enlace de invitacixF3n"
+                      }
+                    )
+                  ] })
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10px] font-bold text-[#8C8579] uppercase tracking-wider pt-1", children: "Invitaciones" }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2.5 max-h-[360px] overflow-y-auto pr-1", children: Object.values(examInvites || {}).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] px-1", children: "TodavxEDa no has generado ninguna invitacixF3n." }) : Object.values(examInvites || {}).sort((a2, b2) => new Date(b2.createdAt) - new Date(a2.createdAt)).map((inv) => {
+                  const link = `${window.location.origin}${window.location.pathname}?invite=${inv.code}`;
+                  const guestsList = Object.values(inv.guests || {});
+                  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                    "div",
+                    {
+                      className: `bg-[#FAF8F5] border rounded-2xl p-3.5 space-y-2 ${inv.active ? "border-[rgba(30,26,18,0.06)]" : "border-[rgba(225,78,60,0.2)] opacity-60"}`,
+                      children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-center justify-between gap-2", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-extrabold text-[#1A1712] truncate", children: inv.title }),
+                            /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-mono font-bold text-[#8C8579]", children: [
+                              "CxF3digo: ",
+                              inv.code
+                            ] })
+                          ] }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `shrink-0 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${inv.active ? "text-[#12A16B] bg-[rgba(18,161,107,0.1)]" : "text-[#E14E3C] bg-[rgba(225,78,60,0.1)]"}`, children: inv.active ? "Activa" : "Revocada" })
+                        ] }),
+                        guestsList.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] italic", children: "Nadie ha entrado con este enlace todavxEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10.5px] text-[#8C8579]", children: guestsList.map((g, gi) => `${g.name}`).join(", ") }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-1.5", children: [
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: async () => {
+                                try {
+                                  await navigator.clipboard.writeText(link);
+                                  setCopiedInviteCode(inv.code);
+                                  setTimeout(() => setCopiedInviteCode(""), 2500);
+                                } catch (e) {
+                                }
+                              },
+                              className: "flex-1 text-[10px] font-extrabold text-[#3457D6] bg-[rgba(52,87,214,0.08)] border-none rounded-lg px-2 py-1.5 cursor-pointer hover:bg-[rgba(52,87,214,0.16)]",
+                              children: copiedInviteCode === inv.code ? "xA1Copiado!" : "Copiar enlace"
+                            }
+                          ),
+                          inv.active && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                            "button",
+                            {
+                              type: "button",
+                              onClick: () => onRevokeInvite(inv.code),
+                              className: "text-[10px] font-extrabold text-[#E14E3C] bg-[rgba(225,78,60,0.1)] border-none rounded-lg px-2.5 py-1.5 cursor-pointer hover:bg-[rgba(225,78,60,0.18)]",
+                              children: "Revocar"
+                            }
+                          )
+                        ] })
+                      ]
+                    },
+                    inv.code
+                  );
+                }) })
               ] }),
               advancedTab === "accounts" && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-4 text-left", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Cuentas y Contrase\xF1as" }),
@@ -21148,6 +21262,54 @@ Cancelar = mantener el examen guardado`) : true;
                 h.testId
               );
             }) })
+          ] });
+        })(),
+        (() => {
+          const weekRows = (tests || []).map((t2) => {
+            const weekMatch = /^week-(\d+)$/.exec(t2.id);
+            const weekNum = weekMatch ? parseInt(weekMatch[1], 10) : null;
+            if (weekNum === null) return null;
+            const results = t2.results || {};
+            const entries = Object.keys(results).map((uid) => {
+              const r = results[uid];
+              const name = uid === "pablomar" ? ((profiles["pablomar"] && profiles["pablomar"].name) || "Pablomar") : uid === "jmar" ? ((profiles["jmar"] && profiles["jmar"].name) || "J.mar") : r.guestName || "Invitado";
+              const isGuest = uid.indexOf("guest_") === 0;
+              const done = !r.pendingReview;
+              const score = r.total ? Math.round(r.score / r.total * 10 * 100) / 100 : 0;
+              return { uid, name, isGuest, done, score };
+            });
+            if (entries.length === 0) return null;
+            const doneEntries = entries.filter((e2) => e2.done);
+            const maxScore = doneEntries.length ? Math.max(...doneEntries.map((e2) => e2.score)) : null;
+            const winners = maxScore !== null ? doneEntries.filter((e2) => e2.score === maxScore) : [];
+            return { week: weekNum, title: t2.title || `Examen Semana ${weekNum}`, entries, winners: winners.length === 1 ? winners : [] };
+          }).filter(Boolean).sort((a2, b2) => a2.week - b2.week);
+          if (weekRows.length === 0) return null;
+          return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h3", { className: "text-base font-bold text-[#1A1712] mb-1", children: "Notas por examen semanal" }),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs text-[#8C8579] mb-4", children: "Comparativa de quien ha hecho cada examen, incluyendo invitados." }),
+            /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2 max-h-[320px] overflow-y-auto pr-1", children: weekRows.map((w) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[#FAF8F5] border border-[rgba(30,26,18,0.05)] rounded-2xl px-4 py-3", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-xs font-extrabold text-[#1A1712] mb-1.5", children: [
+                "Semana ",
+                w.week
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex flex-wrap gap-1.5", children: w.entries.map((e2) => {
+                const isWinner = w.winners.some((wn) => wn.uid === e2.uid);
+                return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                  "span",
+                  {
+                    className: `text-[10.5px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${isWinner ? "bg-[rgba(18,161,107,0.12)] text-[#12A16B]" : e2.isGuest ? "bg-[rgba(52,87,214,0.09)] text-[#3457D6]" : "bg-[#F1EDE3] text-[#8C8579]"}`,
+                    children: [
+                      isWinner ? "\u{1F3C6} " : "",
+                      e2.name,
+                      ": ",
+                      e2.done ? `${e2.score.toFixed(2)}/10` : "pendiente"
+                    ]
+                  },
+                  e2.uid
+                );
+              }) })
+            ] }, w.week)) })
           ] });
         })(),
         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-white rounded-3xl p-5 border border-[rgba(30,26,18,0.07)] shadow-[0_1px_1px_rgba(26,23,18,0.02),0_16px_32px_-18px_rgba(26,23,18,0.16)]", children: [
@@ -30123,6 +30285,25 @@ Cancelar = mantener el examen guardado`) : true;
     const [ankiDecks, setAnkiDecks] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiDecks || []);
     const [ankiCards, setAnkiCards] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiCards || []);
     const [ankiProgress, setAnkiProgress] = (0, import_react31.useState)(() => cachedDB && cachedDB.ankiProgress || {});
+    const [examInvites, setExamInvites] = (0, import_react31.useState)(() => cachedDB && cachedDB.examInvites || {});
+    const [guestInviteCode, setGuestInviteCode] = (0, import_react31.useState)(() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("invite") || null;
+      } catch (e) {
+        return null;
+      }
+    });
+    const [guestName, setGuestName] = (0, import_react31.useState)("");
+    const [guestNameInput, setGuestNameInput] = (0, import_react31.useState)("");
+    const [guestGateLoading, setGuestGateLoading] = (0, import_react31.useState)(true);
+    (0, import_react31.useEffect)(() => {
+      if (!guestInviteCode) return;
+      const iv = setTimeout(() => setGuestGateLoading(false), 900);
+      return () => clearTimeout(iv);
+    }, [guestInviteCode]);
+    const examInvitesRef = (0, import_react31.useRef)(examInvites);
+    examInvitesRef.current = examInvites;
     const profilesRef = (0, import_react31.useRef)(profiles);
     profilesRef.current = profiles;
     const weeksRef = (0, import_react31.useRef)(weeks);
@@ -30202,7 +30383,8 @@ Cancelar = mantener el examen guardado`) : true;
         }
       ],
       ankiCards: [],
-      ankiProgress: {}
+      ankiProgress: {},
+      examInvites: {}
     };
     const DEFAULT_ANKI_DECKS = DEFAULT_LOCAL_DB.ankiDecks;
     const ensureDefaultDecks = (decks) => {
@@ -30250,6 +30432,7 @@ Cancelar = mantener el examen guardado`) : true;
       setAnkiDecks(resolveAnkiDecksForLoad(data.ankiDecks));
       setAnkiCards(data.ankiCards || []);
       setAnkiProgress(data.ankiProgress || {});
+      setExamInvites(data.examInvites || {});
     };
     (0, import_react31.useEffect)(() => {
       const savedUser = localStorage.getItem("opt_session_user");
@@ -30427,6 +30610,8 @@ Cancelar = mantener el examen guardado`) : true;
       ankiCardsRef.current = d.ankiCards || [];
       setAnkiCards(ankiCardsRef.current);
       setAnkiProgress(d.ankiProgress || {});
+      examInvitesRef.current = d.examInvites || {};
+      setExamInvites(examInvitesRef.current);
     };
     (0, import_react31.useEffect)(() => {
       let unsub = null;
@@ -30493,7 +30678,8 @@ Cancelar = mantener el examen guardado`) : true;
             normativas,
             ankiDecks: ankiDecksRef.current || [],
             ankiCards: ankiCardsRef.current || [],
-            ankiProgress
+            ankiProgress,
+            examInvites
           };
           if (Object.keys(snapshotToCache.profiles).length > 0 || snapshotToCache.schedule.length > 0) {
             localStorage.setItem("opt_local_db", JSON.stringify(snapshotToCache));
@@ -30502,7 +30688,7 @@ Cancelar = mantener el examen guardado`) : true;
         }
       }, 800);
       return () => clearTimeout(iv);
-    }, [profiles, weeks, meta, questions, tests, content, schedule, normativas, ankiDecks, ankiCards, ankiProgress, isOfflineMode]);
+    }, [profiles, weeks, meta, questions, tests, content, schedule, normativas, ankiDecks, ankiCards, ankiProgress, examInvites, isOfflineMode]);
     const showToast = (title, sub) => {
       const id3 = "toast_" + Date.now() + Math.random().toString(36).slice(2, 6);
       setToasts((prev) => [...prev, { id: id3, title, sub }]);
@@ -31212,6 +31398,149 @@ Cancelar = mantener el examen guardado`) : true;
         applyResultLocally();
       }
     };
+    const genInviteCode = () => {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    };
+    const handleCreateInvite = async (testId, testTitle, week) => {
+      let code = genInviteCode();
+      let attempts = 0;
+      while (examInvitesRef.current[code] && attempts < 10) {
+        code = genInviteCode();
+        attempts++;
+      }
+      const invite = {
+        code,
+        testId,
+        title: testTitle || testId,
+        week: week != null ? week : null,
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        active: true,
+        guests: {}
+      };
+      const nextInvites = { ...examInvitesRef.current, [code]: invite };
+      examInvitesRef.current = nextInvites;
+      setExamInvites(nextInvites);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.examInvites = nextInvites;
+        saveLocalDB(d);
+      } else {
+        try {
+          await optWriteFields({ examInvites: nextInvites });
+        } catch (e) {
+          console.warn("Backend connection failed, saving invite locally", e);
+          notifyWriteFailure(e);
+          setIsOfflineMode(true);
+          localStorage.setItem("opt_is_offline_mode", "true");
+          const d = loadLocalDB();
+          d.examInvites = nextInvites;
+          saveLocalDB(d);
+        }
+      }
+      return code;
+    };
+    const handleRevokeInvite = async (code) => {
+      const existing = examInvitesRef.current[code];
+      if (!existing) return;
+      const nextInvites = { ...examInvitesRef.current, [code]: { ...existing, active: false } };
+      examInvitesRef.current = nextInvites;
+      setExamInvites(nextInvites);
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        d.examInvites = nextInvites;
+        saveLocalDB(d);
+      } else {
+        try {
+          await optWriteFields({ examInvites: nextInvites });
+        } catch (e) {
+          console.warn("Backend connection failed, revoking invite locally", e);
+          notifyWriteFailure(e);
+          setIsOfflineMode(true);
+          localStorage.setItem("opt_is_offline_mode", "true");
+          const d = loadLocalDB();
+          d.examInvites = nextInvites;
+          saveLocalDB(d);
+        }
+      }
+    };
+    const handleGuestSaveTestResult = async (testId, resultPatch, code, gName) => {
+      const { score, total, answers: selectedAnswers, pendingReview, pendingQuestions, autoCorrectCount, autoWrongCount } = resultPatch || {};
+      const guestUid = `guest_${code}`;
+      const resultEntry = {
+        score,
+        total,
+        answers: selectedAnswers,
+        completedAt: (/* @__PURE__ */ new Date()).toISOString(),
+        weekAtCompletion: null,
+        gradeAdded: 0,
+        pendingReview: !!pendingReview,
+        pendingQuestions: pendingQuestions || [],
+        pendingGrades: {},
+        autoCorrectCount: autoCorrectCount || 0,
+        autoWrongCount: autoWrongCount || 0,
+        isGuest: true,
+        guestName: gName || "Invitado"
+      };
+      const testUpdate = { id: testId, results: { [guestUid]: resultEntry } };
+      const applyResultLocally = () => {
+        const nextTests = testsRef.current.map(
+          (t2) => t2.id === testId ? { ...t2, results: { ...t2.results || {}, ...testUpdate.results } } : t2
+        );
+        testsRef.current = nextTests;
+        setTests(nextTests);
+      };
+      const existingInvite = examInvitesRef.current[code];
+      let nextInvites = examInvitesRef.current;
+      if (existingInvite) {
+        nextInvites = {
+          ...examInvitesRef.current,
+          [code]: {
+            ...existingInvite,
+            guests: { ...existingInvite.guests || {}, [guestUid]: { name: gName || "Invitado", completedAt: resultEntry.completedAt } }
+          }
+        };
+        examInvitesRef.current = nextInvites;
+        setExamInvites(nextInvites);
+      }
+      if (isOfflineMode) {
+        const d = loadLocalDB();
+        const existingIdx = d.tests.findIndex((t2) => t2.id === testId);
+        if (existingIdx !== -1) {
+          d.tests[existingIdx].results = { ...d.tests[existingIdx].results || {}, ...testUpdate.results };
+        }
+        d.examInvites = nextInvites;
+        saveLocalDB(d);
+        applyResultLocally();
+        return;
+      }
+      try {
+        applyResultLocally();
+        const mergedTests = await optSaveTestResultAtomic(testId, guestUid, resultEntry);
+        if (mergedTests) {
+          testsRef.current = mergedTests;
+          setTests(mergedTests);
+        }
+        if (existingInvite) {
+          await optWriteFields({ examInvites: nextInvites });
+        }
+      } catch (e) {
+        console.warn("Backend connection failed, saving guest test result locally", e);
+        notifyWriteFailure(e);
+        setIsOfflineMode(true);
+        localStorage.setItem("opt_is_offline_mode", "true");
+        const d = loadLocalDB();
+        const existingIdx = d.tests.findIndex((t2) => t2.id === testId);
+        if (existingIdx !== -1) {
+          d.tests[existingIdx].results = { ...d.tests[existingIdx].results || {}, ...testUpdate.results };
+        }
+        d.examInvites = nextInvites;
+        saveLocalDB(d);
+        applyResultLocally();
+      }
+    };
     const handleReviewNormativaAnswer = async (testId, uid, qi, isCorrect) => {
       const existingTest = testsRef.current.find((t2) => t2.id === testId);
       if (!existingTest) return;
@@ -31900,6 +32229,120 @@ Cancelar = mantener el examen guardado`) : true;
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 4e3);
     };
+    if (guestInviteCode && !sessionUser) {
+      const handleExitGuest = () => {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("invite");
+          window.location.href = url.toString();
+        } catch (e) {
+          window.location.href = window.location.pathname;
+        }
+      };
+      const invite = (examInvites || {})[guestInviteCode];
+      const inviteTest = invite ? (tests || []).find((t2) => t2.id === invite.testId) : null;
+      const guestShell = (inner) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "min-h-screen bg-[#EAE6DC] flex flex-col items-center px-4 py-8 sm:py-10 font-sans", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { id: "opt-toast-layer", className: "fixed top-4 right-4 sm:top-5 sm:right-5 z-50 flex flex-col gap-2 w-[calc(100%-32px)] max-w-[320px]", children: toasts.map((toast) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+          "div",
+          {
+            className: "bg-[rgba(28,28,30,0.92)] text-white p-3.5 px-4 rounded-2xl flex gap-3 items-center backdrop-blur-xl shadow-2xl animate-fade-in",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "text-[#E2921A] shrink-0", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Trophy, { size: 20 }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-xs font-bold", children: toast.title }),
+                /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-[11px] text-[rgba(255,255,255,0.6)] mt-0.5", children: toast.sub })
+              ] })
+            ]
+          },
+          toast.id
+        )) }),
+        /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] mb-4 flex items-center justify-between", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-[#8C8579]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Shield, { size: 14 }),
+            "Modo invitado"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { onClick: handleExitGuest, className: "text-[11px] font-bold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#1A1712]", children: "Salir" })
+        ] }),
+        inner
+      ] });
+      if (guestGateLoading && (!invite || !inviteTest)) {
+        return guestShell(
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 text-center shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-semibold text-[#8C8579]", children: "Cargando invitaci\xF3n\u2026" }) })
+        );
+      }
+      if (!invite || !invite.active || !inviteTest) {
+        return guestShell(
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 text-center shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-2", children: "Enlace no v\xE1lido" }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-6", children: "Este enlace de invitaci\xF3n no existe o ha sido desactivado por el administrador. Pide uno nuevo." }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { onClick: handleExitGuest, className: "bg-[#E14E3C] text-white border-none rounded-full py-3 px-6 font-bold text-sm cursor-pointer hover:brightness-95", children: "Ir al inicio de sesi\xF3n" })
+          ] })
+        );
+      }
+      if (!guestName) {
+        return guestShell(
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "w-full max-w-[440px] bg-white rounded-[28px] p-8 shadow-[0_8px_20px_rgba(26,23,18,0.07)]", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("h2", { className: "text-lg font-extrabold text-[#1A1712] mb-1.5", children: "Te han invitado a un examen" }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("p", { className: "text-sm font-medium text-[#8C8579] mb-6", children: invite.title }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("label", { className: "block text-[10px] font-extrabold text-[rgba(26,23,18,0.58)] uppercase tracking-wider mb-2", children: "Tu nombre" }),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+              "input",
+              {
+                value: guestNameInput,
+                onChange: (e) => setGuestNameInput(e.target.value),
+                onKeyDown: (e) => {
+                  if (e.key === "Enter" && guestNameInput.trim()) setGuestName(guestNameInput.trim());
+                },
+                autoFocus: true,
+                className: "w-full bg-[#F1EDE3] border border-transparent rounded-2xl py-3.5 px-4 font-semibold text-base text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.32)] focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all mb-6",
+                type: "text",
+                placeholder: "Escribe tu nombre"
+              }
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+              "button",
+              {
+                disabled: !guestNameInput.trim(),
+                onClick: () => setGuestName(guestNameInput.trim()),
+                className: "w-full bg-[#E14E3C] text-white border-none rounded-full py-4 font-bold text-base shadow-[0_10px_24px_-10px_rgba(225,78,60,0.55)] cursor-pointer active:scale-97 hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
+                children: "Empezar examen"
+              }
+            )
+          ] })
+        );
+      }
+      const guestUser = { uid: `guest_${guestInviteCode}`, name: guestName, role: "guest", pid: null };
+      return guestShell(
+        /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "w-full max-w-[440px]", children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+          ExamSection,
+          {
+            my: guestUser,
+            tests: [inviteTest],
+            weeks: [],
+            schedule: [],
+            t,
+            showToast,
+            onSaveTestResult: (testId, resultPatch) => handleGuestSaveTestResult(testId, resultPatch, guestInviteCode, guestName),
+            onUpsertWeek: async () => {
+            },
+            currentWeekNum: invite.week,
+            currentSchedule: null,
+            calcTimeRemaining: () => null,
+            fireConfetti,
+            onExamActiveChange: () => {
+            },
+            ankiDecks,
+            profiles: {},
+            onReviewNormativaAnswer: () => {
+            },
+            onFinalizeReview: () => {
+            },
+            onReopenTestReview: () => {
+            }
+          }
+        ) })
+      );
+    }
     if (!sessionUser) {
       const loginFeatures = [
         { icon: Calendar, label: "Planificaci\xF3n semanal autom\xE1tica" },
@@ -32080,6 +32523,9 @@ Cancelar = mantener el examen guardado`) : true;
                   onMarkLawNoticeSeen: handleMarkLawNoticeSeen,
                   legislationDetails,
                   onSaveLegislationDetails: handleSaveLegislationDetails,
+                  examInvites,
+                  onCreateInvite: handleCreateInvite,
+                  onRevokeInvite: handleRevokeInvite,
                   forceAdminView: true
                 }
               ) })
@@ -32271,7 +32717,10 @@ Cancelar = mantener el examen guardado`) : true;
                   lawUpdateNotices,
                   onMarkLawNoticeSeen: handleMarkLawNoticeSeen,
                   legislationDetails,
-                  onSaveLegislationDetails: handleSaveLegislationDetails
+                  onSaveLegislationDetails: handleSaveLegislationDetails,
+                  examInvites,
+                  onCreateInvite: handleCreateInvite,
+                  onRevokeInvite: handleRevokeInvite
                 }
               ) })
             ]
