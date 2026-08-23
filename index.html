@@ -30307,6 +30307,8 @@ Cancelar = mantener el examen guardado`) : true;
     const [guestName, setGuestName] = (0, import_react31.useState)("");
     const [guestNameInput, setGuestNameInput] = (0, import_react31.useState)("");
     const [guestGateLoading, setGuestGateLoading] = (0, import_react31.useState)(true);
+    const [showInviteCodeForm, setShowInviteCodeForm] = (0, import_react31.useState)(false);
+    const [inviteCodeInput, setInviteCodeInput] = (0, import_react31.useState)("");
     (0, import_react31.useEffect)(() => {
       if (!guestInviteCode) return;
       const iv = setTimeout(() => setGuestGateLoading(false), 900);
@@ -32446,7 +32448,41 @@ Cancelar = mantener el examen guardado`) : true;
                     className: "w-full bg-[#E14E3C] text-white border-none rounded-full py-4 font-bold text-base shadow-[0_10px_24px_-10px_rgba(225,78,60,0.55)] cursor-pointer active:scale-97 hover:brightness-95 transition-all font-sans",
                     children: "Continuar"
                   }
-                )
+                ),
+                !showInviteCodeForm ? /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setShowInviteCodeForm(true),
+                    className: "w-full bg-transparent text-[#3457D6] border-none py-1 font-bold text-xs cursor-pointer hover:underline",
+                    children: "\xBFTienes un c\xF3digo de invitaci\xF3n a un examen?"
+                  }
+                ) : /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: "bg-[#F1EDE3] rounded-2xl p-4 space-y-2.5", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "text-xs font-bold text-[#1A1712]", children: "Entrar con c\xF3digo de invitaci\xF3n" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+                    "input",
+                    {
+                      value: inviteCodeInput,
+                      onChange: (e) => setInviteCodeInput(e.target.value.toUpperCase()),
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter" && inviteCodeInput.trim()) setGuestInviteCode(inviteCodeInput.trim());
+                      },
+                      className: "w-full bg-white border border-transparent rounded-xl py-2.5 px-3.5 font-mono font-bold text-sm text-[#1A1712] outline-none tracking-widest text-center focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all",
+                      type: "text",
+                      placeholder: "C\xD3DIGO"
+                    }
+                  ),
+                  /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: !inviteCodeInput.trim(),
+                      onClick: () => setGuestInviteCode(inviteCodeInput.trim()),
+                      className: "w-full bg-[#3457D6] text-white border-none rounded-xl py-2.5 font-bold text-xs cursor-pointer hover:brightness-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
+                      children: "Entrar como invitado"
+                    }
+                  )
+                ] })
               ] }) })
             ]
           }
