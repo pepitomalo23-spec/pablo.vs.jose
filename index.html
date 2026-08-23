@@ -20804,7 +20804,7 @@ Cancelar = mantener el examen guardado`) : true;
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[11px] text-[#8C8579] font-medium -mt-2", children: "Genera un enlace de acceso puntual para que alguien externo haga un examen concreto, sin necesidad de crearle una cuenta. El enlace solo sirve para ese examen." }),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "bg-[#FAF8F5] border border-[rgba(30,26,18,0.06)] rounded-2xl p-3.5 space-y-2.5", children: [
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("label", { className: "block text-[10px] font-bold text-[#8C8579] uppercase tracking-wider", children: "Examen" }),
-                  (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "AxFAn no hay ningxFAn examen publicado con preguntas." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
+                  (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "A\xFAn no hay ning\xFAn examen publicado con preguntas." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
                     /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                       "select",
                       {
@@ -20812,7 +20812,7 @@ Cancelar = mantener el examen guardado`) : true;
                         onChange: (e) => setInviteTestId(e.target.value),
                         className: "w-full bg-white border border-[rgba(30,26,18,0.12)] rounded-xl py-2.5 px-3 font-semibold text-xs text-[#1A1712] outline-none",
                         children: [
-                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "", children: "Selecciona un examenu2026" }),
+                          /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: "", children: "Selecciona un examen\u2026" }),
                           (tests || []).filter((t2) => Array.isArray(t2.questions) && t2.questions.length > 0).map((t2) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("option", { value: t2.id, children: t2.title || t2.id }, t2.id))
                         ]
                       }
@@ -20826,12 +20826,12 @@ Cancelar = mantener el examen guardado`) : true;
                           const chosen = (tests || []).find((t2) => t2.id === inviteTestId);
                           if (!chosen) return;
                           setInviteCreating(true);
-                          const weekMatch = /^week-(d+)$/.exec(chosen.id);
+                          const weekMatch = /^week-(\d+)$/.exec(chosen.id);
                           const week = weekMatch ? parseInt(weekMatch[1], 10) : null;
                           const code = await onCreateInvite(chosen.id, chosen.title || chosen.id, week);
                           setInviteCreating(false);
                           setInviteTestId("");
-                          showToast("InvitacixF3n creada", `Enlace generado para u201C${chosen.title || chosen.id}u201D.`);
+                          showToast("Invitaci\xF3n creada", `Enlace generado para \u201C${chosen.title || chosen.id}\u201D.`);
                           try {
                             const link = `${window.location.origin}${window.location.pathname}?invite=${code}`;
                             await navigator.clipboard.writeText(link);
@@ -20841,13 +20841,13 @@ Cancelar = mantener el examen guardado`) : true;
                           }
                         },
                         className: "w-full bg-[#3457D6] text-white border-none rounded-xl py-2.5 font-bold text-xs cursor-pointer hover:brightness-95 active:scale-97 disabled:opacity-40 disabled:cursor-not-allowed transition-all",
-                        children: inviteCreating ? "Generandou2026" : "Generar enlace de invitacixF3n"
+                        children: inviteCreating ? "Generando\u2026" : "Generar enlace de invitaci\xF3n"
                       }
                     )
                   ] })
                 ] }),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10px] font-bold text-[#8C8579] uppercase tracking-wider pt-1", children: "Invitaciones" }),
-                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2.5 max-h-[360px] overflow-y-auto pr-1", children: Object.values(examInvites || {}).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] px-1", children: "TodavxEDa no has generado ninguna invitacixF3n." }) : Object.values(examInvites || {}).sort((a2, b2) => new Date(b2.createdAt) - new Date(a2.createdAt)).map((inv) => {
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-2.5 max-h-[360px] overflow-y-auto pr-1", children: Object.values(examInvites || {}).length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579] px-1", children: "Todav\xEDa no has generado ninguna invitaci\xF3n." }) : Object.values(examInvites || {}).sort((a2, b2) => new Date(b2.createdAt) - new Date(a2.createdAt)).map((inv) => {
                   const link = `${window.location.origin}${window.location.pathname}?invite=${inv.code}`;
                   const guestsList = Object.values(inv.guests || {});
                   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
@@ -20859,13 +20859,23 @@ Cancelar = mantener el examen guardado`) : true;
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "min-w-0", children: [
                             /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-xs font-extrabold text-[#1A1712] truncate", children: inv.title }),
                             /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "text-[10px] font-mono font-bold text-[#8C8579]", children: [
-                              "CxF3digo: ",
+                              "C\xF3digo: ",
                               inv.code
                             ] })
                           ] }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: `shrink-0 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${inv.active ? "text-[#12A16B] bg-[rgba(18,161,107,0.1)]" : "text-[#E14E3C] bg-[rgba(225,78,60,0.1)]"}`, children: inv.active ? "Activa" : "Revocada" })
                         ] }),
-                        guestsList.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] italic", children: "Nadie ha entrado con este enlace todavxEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10.5px] text-[#8C8579]", children: guestsList.map((g, gi) => `${g.name}`).join(", ") }),
+                        guestsList.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] italic", children: "Nadie ha entrado con este enlace todav\xEDa." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "text-[10.5px] text-[#8C8579]", children: guestsList.map((g, gi) => `${g.name}`).join(", ") }),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                          "input",
+                          {
+                            readOnly: true,
+                            value: link,
+                            onFocus: (e) => e.target.select(),
+                            onClick: (e) => e.target.select(),
+                            className: "w-full bg-white border border-[rgba(30,26,18,0.1)] rounded-lg px-2.5 py-2 text-[10px] font-mono text-[#1A1712] outline-none truncate"
+                          }
+                        ),
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-1.5", children: [
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                             "button",
@@ -20880,7 +20890,7 @@ Cancelar = mantener el examen guardado`) : true;
                                 }
                               },
                               className: "flex-1 text-[10px] font-extrabold text-[#3457D6] bg-[rgba(52,87,214,0.08)] border-none rounded-lg px-2 py-1.5 cursor-pointer hover:bg-[rgba(52,87,214,0.16)]",
-                              children: copiedInviteCode === inv.code ? "xA1Copiado!" : "Copiar enlace"
+                              children: copiedInviteCode === inv.code ? "\xA1Copiado!" : "Copiar enlace"
                             }
                           ),
                           inv.active && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
