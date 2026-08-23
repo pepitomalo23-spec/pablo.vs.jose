@@ -18679,7 +18679,8 @@ B) Opci\xF3n B*` }),
     const [justCreatedCode, setJustCreatedCode] = (0, import_react7.useState)(null);
     const [studentPreview, setStudentPreview] = (0, import_react7.useState)(null);
     const [expandedLegName, setExpandedLegName] = (0, import_react7.useState)(null);
-    const [legLineType, setLegLineType] = (0, import_react7.useState)("titulo");
+    const [legLineType, setLegLineType] = (0, import_react7.useState)("T\xEDtulo");
+    const [legLineColor, setLegLineColor] = (0, import_react7.useState)("#3457D6");
     const [legLineText, setLegLineText] = (0, import_react7.useState)("");
     const [legLineIndent, setLegLineIndent] = (0, import_react7.useState)(false);
     const [openLegItems, setOpenLegItems] = (0, import_react7.useState)({});
@@ -18728,7 +18729,13 @@ B) Opci\xF3n B*` }),
       { key: "capitulo", label: "Cap\xEDtulo", color: "#3457D6" },
       { key: "articulo", label: "Art\xEDculo", color: "#8B5CF6" }
     ];
-    const legLineTypeInfo = (key) => LEG_LINE_TYPES.find((lt) => lt.key === key) || LEG_LINE_TYPES[0];
+    const legLineTypeInfo = (line) => {
+      const preset = LEG_LINE_TYPES.find((lt) => lt.key === (line && line.type));
+      return {
+        label: preset ? preset.label : line && line.type ? line.type : "Etiqueta",
+        color: (line && line.color) || (preset ? preset.color : "#8C8579")
+      };
+    };
     const handleAddLegLine = (lawName) => {
       const text = legLineText.trim();
       if (!text) {
@@ -18736,7 +18743,7 @@ B) Opci\xF3n B*` }),
         return;
       }
       const current = (legislationDetails && legislationDetails[lawName]) || [];
-      const nextLine = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type: legLineType, text, indent: legLineIndent };
+      const nextLine = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, type: legLineType.trim() || "Etiqueta", color: legLineColor, text, indent: legLineIndent };
       const nextItems = [...current, nextLine];
       onSaveLegislationDetails(lawName, nextItems);
       setLegLineText("");
@@ -19479,7 +19486,7 @@ B) Opci\xF3n B*` }),
                     }
                   ),
                   clickable && isOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { onClick: (e) => e.stopPropagation(), className: "mt-3 pt-3 border-t border-[rgba(30,26,18,0.08)] space-y-1.5", children: detailLines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic", style: { color: item.seen ? "rgba(255,255,255,0.8)" : "#8C8579" }, children: "El administrador todav\xEDa no ha a\xF1adido el desglose (t\xEDtulos, cap\xEDtulos o art\xEDculos) de esta ley." }) : detailLines.map((line) => {
-                    const info = legLineTypeInfo(line.type);
+                    const info = legLineTypeInfo(line);
                     return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                       "div",
                       {
@@ -20155,7 +20162,7 @@ Cancelar = mantener el examen guardado`) : true;
               /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-2", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Desglose a\xF1adido" }),
                 lines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "Todav\xEDa no has a\xF1adido ning\xFAn t\xEDtulo, cap\xEDtulo o art\xEDculo." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-1.5", children: lines.map((line) => {
-                  const info = legLineTypeInfo(line.type);
+                  const info = legLineTypeInfo(line);
                   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                     "div",
                     {
@@ -20194,16 +20201,51 @@ Cancelar = mantener el examen guardado`) : true;
               ] }),
               /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "pt-4 border-t border-[rgba(30,26,18,0.08)] space-y-3", children: [
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "A\xF1adir l\xEDnea" }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-[10.5px] text-[#8C8579] font-medium -mt-1", children: "Escribe la etiqueta que quieras (T\xEDtulo, Cap\xEDtulo, Secci\xF3n, Anexo\u2026) y elige su color." }),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "flex gap-2 flex-wrap", children: LEG_LINE_TYPES.map((lt2) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
                   "button",
                   {
-                    onClick: () => setLegLineType(lt2.key),
+                    type: "button",
+                    onClick: () => {
+                      setLegLineType(lt2.label);
+                      setLegLineColor(lt2.color);
+                    },
                     className: "rounded-full px-4 py-1.5 text-xs font-extrabold border-none cursor-pointer transition-all",
-                    style: legLineType === lt2.key ? { backgroundColor: lt2.color, color: "#fff" } : { backgroundColor: `${lt2.color}14`, color: lt2.color },
+                    style: legLineType === lt2.label && legLineColor === lt2.color ? { backgroundColor: lt2.color, color: "#fff" } : { backgroundColor: `${lt2.color}14`, color: lt2.color },
                     children: lt2.label
                   },
                   lt2.key
                 )) }),
+                /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-2 items-center", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                    "input",
+                    {
+                      value: legLineType,
+                      onChange: (e) => setLegLineType(e.target.value),
+                      placeholder: "Etiqueta (ej: T\xEDtulo, Secci\xF3n, Anexo\u2026)",
+                      className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-2.5 px-4 font-bold text-xs uppercase tracking-wide text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.35)] normal-case focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all"
+                    }
+                  ),
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
+                    "label",
+                    {
+                      title: "Elegir color de la etiqueta",
+                      className: "shrink-0 flex items-center gap-1.5 bg-[#F1EDE3] rounded-2xl py-1.5 px-2.5 cursor-pointer",
+                      children: [
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+                          "input",
+                          {
+                            type: "color",
+                            value: legLineColor,
+                            onChange: (e) => setLegLineColor(e.target.value),
+                            className: "w-6 h-6 p-0 border-none rounded-md cursor-pointer bg-transparent"
+                          }
+                        ),
+                        /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[10px] font-bold text-[#8C8579] uppercase tracking-wide pr-1", children: "Color" })
+                      ]
+                    }
+                  )
+                ] }),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                   "button",
                   {
@@ -20225,7 +20267,7 @@ Cancelar = mantener el examen guardado`) : true;
                       onKeyDown: (e) => {
                         if (e.key === "Enter") handleAddLegLine(expandedLegName);
                       },
-                      placeholder: legLineType === "titulo" ? "Ej: T\xEDtulo I. De los derechos y deberes fundamentales" : legLineType === "capitulo" ? "Ej: Cap\xEDtulo II. Derechos y libertades" : "Ej: Art\xEDculos 14 a 29",
+                      placeholder: "Texto de esta l\xEDnea (lo que t\xFA quieras escribir)",
                       style: legLineIndent ? { marginLeft: "22px" } : void 0,
                       className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-3 px-4 font-semibold text-sm text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.35)] focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all"
                     }
@@ -20239,8 +20281,8 @@ Cancelar = mantener el examen guardado`) : true;
                     }
                   )
                 ] }),
-                legLineText.trim() && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5", style: { backgroundColor: `${legLineTypeInfo(legLineType).color}12`, marginLeft: legLineIndent ? "22px" : "0" }, children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: legLineTypeInfo(legLineType).color }, children: legLineTypeInfo(legLineType).label }),
+                legLineText.trim() && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5", style: { backgroundColor: `${legLineColor}12`, marginLeft: legLineIndent ? "22px" : "0" }, children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: legLineColor }, children: legLineType.trim() || "Etiqueta" }),
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug text-[#1A1712]", children: legLineText })
                 ] })
               ] })
