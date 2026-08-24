@@ -18682,7 +18682,7 @@ B) Opci\xF3n B*` }),
     const [legLineType, setLegLineType] = (0, import_react7.useState)("T\xEDtulo");
     const [legLineColor, setLegLineColor] = (0, import_react7.useState)("#3457D6");
     const [legLineText, setLegLineText] = (0, import_react7.useState)("");
-    const [legLineIndent, setLegLineIndent] = (0, import_react7.useState)(false);
+    const [legLineIndent, setLegLineIndent] = (0, import_react7.useState)(0);
     const [openLegItems, setOpenLegItems] = (0, import_react7.useState)({});
     if (studentPreview) {
       return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "min-h-screen bg-[#FDFBF8] px-4 sm:px-6 py-6 sm:py-8", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "max-w-2xl mx-auto", children: [
@@ -18753,9 +18753,17 @@ B) Opci\xF3n B*` }),
       const nextItems = current.filter((l) => l.id !== lineId);
       onSaveLegislationDetails(lawName, nextItems);
     };
+    const getLegLineIndentLevel = (line) => {
+      if (typeof (line && line.indent) === "number") return Math.max(0, Math.min(2, line.indent));
+      return line && line.indent ? 1 : 0;
+    };
     const handleToggleLegLineIndent = (lawName, lineId) => {
       const current = (legislationDetails && legislationDetails[lawName]) || [];
-      const nextItems = current.map((l) => l.id === lineId ? { ...l, indent: !l.indent } : l);
+      const nextItems = current.map((l) => {
+        if (l.id !== lineId) return l;
+        const level = getLegLineIndentLevel(l);
+        return { ...l, indent: level >= 2 ? 0 : level + 1 };
+      });
       onSaveLegislationDetails(lawName, nextItems);
     };
     const handleUpdatePassword = async () => {
@@ -19487,13 +19495,14 @@ B) Opci\xF3n B*` }),
                   ),
                   clickable && isOpen && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { onClick: (e) => e.stopPropagation(), className: "mt-3 pt-3 border-t border-[rgba(30,26,18,0.08)] space-y-1.5", children: detailLines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic", style: { color: item.seen ? "rgba(255,255,255,0.8)" : "#8C8579" }, children: "El administrador todav\xEDa no ha a\xF1adido el desglose (t\xEDtulos, cap\xEDtulos o art\xEDculos) de esta ley." }) : detailLines.map((line) => {
                     const info = legLineTypeInfo(line);
+                    const indentLevel = getLegLineIndentLevel(line);
                     return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                       "div",
                       {
                         className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5",
-                        style: { backgroundColor: "#fff", boxShadow: `inset 0 0 0 100px ${info.color}12`, marginLeft: line.indent ? "22px" : "0" },
+                        style: { backgroundColor: "#fff", boxShadow: `inset 0 0 0 100px ${info.color}12`, marginLeft: `${indentLevel * 22}px` },
                         children: [
-                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { style: { color: "#8C8579" }, children: "\u21B3" }),
+                          indentLevel > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { style: { color: "#8C8579" }, children: "\u21B3".repeat(indentLevel) }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: info.color }, children: info.label }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug", style: { color: "#1A1712" }, children: line.text })
                         ]
@@ -20163,14 +20172,15 @@ Cancelar = mantener el examen guardado`) : true;
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("h4", { className: "text-xs font-black text-[#1A1712] uppercase tracking-wider", children: "Desglose a\xF1adido" }),
                 lines.length === 0 ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("p", { className: "text-xs italic text-[#8C8579]", children: "Todav\xEDa no has a\xF1adido ning\xFAn t\xEDtulo, cap\xEDtulo o art\xEDculo." }) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "space-y-1.5", children: lines.map((line) => {
                   const info = legLineTypeInfo(line);
+                  const indentLevel = getLegLineIndentLevel(line);
                   return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                     "div",
                     {
                       className: "flex items-center justify-between gap-2 rounded-xl px-3 py-2",
-                      style: { backgroundColor: `${info.color}12`, border: `1px solid ${info.color}30`, marginLeft: line.indent ? "22px" : "0" },
+                      style: { backgroundColor: `${info.color}12`, border: `1px solid ${info.color}30`, marginLeft: `${indentLevel * 22}px` },
                       children: [
                         /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 min-w-0", children: [
-                          line.indent && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[#8C8579] shrink-0", children: "\u21B3" }),
+                          indentLevel > 0 && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[#8C8579] shrink-0", children: "\u21B3".repeat(indentLevel) }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: info.color }, children: info.label }),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-sm font-semibold text-[#1A1712]", children: line.text })
                         ] }),
@@ -20179,9 +20189,9 @@ Cancelar = mantener el examen guardado`) : true;
                             "button",
                             {
                               onClick: () => handleToggleLegLineIndent(expandedLegName, line.id),
-                              title: "Meter/sacar sangr\xEDa",
+                              title: "Meter/sacar sangr\xEDa (hasta 2 niveles)",
                               className: "text-[11px] font-extrabold text-[#8C8579] bg-transparent border-none cursor-pointer hover:text-[#3457D6]",
-                              children: line.indent ? "\u21B0 Quitar sangr\xEDa" : "\u21B3 Sangrar"
+                              children: indentLevel === 0 ? "\u21B3 Sangrar" : indentLevel === 1 ? "\u21B3 Sangrar m\xE1s" : "\u21B0 Quitar sangr\xEDa"
                             }
                           ),
                           /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
@@ -20249,13 +20259,11 @@ Cancelar = mantener el examen guardado`) : true;
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(
                   "button",
                   {
-                    onClick: () => setLegLineIndent(!legLineIndent),
+                    type: "button",
+                    onClick: () => setLegLineIndent((prev) => prev >= 2 ? 0 : prev + 1),
                     className: "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-extrabold border-none cursor-pointer transition-all",
-                    style: legLineIndent ? { backgroundColor: "#1A1712", color: "#fff" } : { backgroundColor: "#F1EDE3", color: "#8C8579" },
-                    children: [
-                      "\u21B3",
-                      " Meter para dentro (va debajo del anterior)"
-                    ]
+                    style: legLineIndent > 0 ? { backgroundColor: "#1A1712", color: "#fff" } : { backgroundColor: "#F1EDE3", color: "#8C8579" },
+                    children: legLineIndent === 0 ? "\u21B3 Meter para dentro (va debajo del anterior)" : legLineIndent === 1 ? "\u21B3\u21B3 Meter un nivel m\xE1s" : "\u21B0 Quitar sangr\xEDa (nivel " + legLineIndent + "/2)"
                   }
                 ),
                 /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex gap-2", children: [
@@ -20268,7 +20276,7 @@ Cancelar = mantener el examen guardado`) : true;
                         if (e.key === "Enter") handleAddLegLine(expandedLegName);
                       },
                       placeholder: "Texto de esta l\xEDnea (lo que t\xFA quieras escribir)",
-                      style: legLineIndent ? { marginLeft: "22px" } : void 0,
+                      style: legLineIndent > 0 ? { marginLeft: `${legLineIndent * 22}px` } : void 0,
                       className: "flex-1 bg-[#F1EDE3] border border-transparent rounded-2xl py-3 px-4 font-semibold text-sm text-[#1A1712] outline-none placeholder-[rgba(26,23,18,0.35)] focus:bg-white focus:shadow-[0_0_0_3.5px_rgba(52,87,214,0.09),inset_0_0_0_1.5px_#3457D6] transition-all"
                     }
                   ),
@@ -20281,7 +20289,7 @@ Cancelar = mantener el examen guardado`) : true;
                     }
                   )
                 ] }),
-                legLineText.trim() && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5", style: { backgroundColor: `${legLineColor}12`, marginLeft: legLineIndent ? "22px" : "0" }, children: [
+                legLineText.trim() && /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "flex items-baseline gap-2 rounded-lg px-2.5 py-1.5", style: { backgroundColor: `${legLineColor}12`, marginLeft: legLineIndent > 0 ? `${legLineIndent * 22}px` : "0" }, children: [
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[9px] font-black uppercase tracking-wider shrink-0", style: { color: legLineColor }, children: legLineType.trim() || "Etiqueta" }),
                   /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("span", { className: "text-[13px] font-semibold leading-snug text-[#1A1712]", children: legLineText })
                 ] })
